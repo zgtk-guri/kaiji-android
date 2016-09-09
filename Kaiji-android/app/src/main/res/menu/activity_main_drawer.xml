@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_stat"
+            android:icon="@drawable/ic_menu_stats"
+            android:title="統計" />
+        <item
+            android:id="@+id/nav_chat"
+            android:icon="@drawable/ic_menu_chat"
+            android:title="チャット" />
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/ic_menu_settings"
+            android:title="設定"/>
+        <item
+            android:title="ユーザー">
+            <menu>
+                <item
+                    android:id="@+id/nav_add_user"
+                    android:icon="@drawable/ic_menu_add_user"
+                    android:title="新規登録"/>
+                <item
+                    android:id="@+id/nav_user_list"
+                    android:icon="@drawable/ic_menu_users"
+                    android:title="一覧"/>
+            </menu>
+        </item>
+        <item
+            android:title="ゲーム">
+            <menu>
+                <item
+                    android:id="@+id/nav_poker"
+                    android:title="ポーカー"/>
+                <item
+                    android:id="@+id/nav_blackjack"
+                    android:title="ブラックジャック"/>
+                <item
+                    android:id="@+id/nav_baccarat"
+                    android:title="バカラ"/>
+                <item
+                    android:id="@+id/nav_roulette"
+                    android:title="ルーレット"/>
+
+            </menu>
+        </item>
+
+    </group>
+</menu>
