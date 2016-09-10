@@ -1,0 +1,11 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- These settings headers are only used on tablets. -->
+
+    <header
+        android:fragment="net.gurigoro.kaiji_android.SettingsActivity$ConnectivityPreferenceFragment"
+        android:icon="@drawable/ic_setting_connectivity"
+        android:title="接続" />
+
+
+</preference-headers>

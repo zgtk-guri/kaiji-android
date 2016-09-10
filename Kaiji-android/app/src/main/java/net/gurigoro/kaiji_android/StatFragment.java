@@ -1,4 +1,4 @@
-package layout;
+package net.gurigoro.kaiji_android;
 
 import android.content.Context;
 import android.net.Uri;
@@ -7,8 +7,6 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import net.gurigoro.kaiji_android.R;
 
 /**
  * A simple {@link Fragment} subclass.
