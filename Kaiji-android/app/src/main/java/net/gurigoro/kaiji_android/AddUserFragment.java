@@ -8,25 +8,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link StatFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class StatFragment extends Fragment {
+
+public class AddUserFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    public static final String TAG = "stat_fragment";
+    public static final String TAG = "add_user_fragment";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-
-    public StatFragment() {
+    public AddUserFragment() {
         // Required empty public constructor
     }
 
@@ -36,11 +31,11 @@ public class StatFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment StatFragment.
+     * @return A new instance of fragment AddUserFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static StatFragment newInstance(String param1, String param2) {
-        StatFragment fragment = new StatFragment();
+    public static AddUserFragment newInstance(String param1, String param2) {
+        AddUserFragment fragment = new AddUserFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -61,17 +56,7 @@ public class StatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_stat, container, false);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
+        return inflater.inflate(R.layout.fragment_add_user, container, false);
     }
 
 }

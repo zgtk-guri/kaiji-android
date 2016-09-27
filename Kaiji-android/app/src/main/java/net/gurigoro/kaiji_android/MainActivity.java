@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
     }
 
     @Override
@@ -53,9 +55,73 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if(id == R.id.nav_setting){
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
+        switch (id) {
+            case R.id.nav_setting: {
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            }
+            case R.id.nav_dev_mode: {
+                Intent intent = new Intent(MainActivity.this, DeveloperModeActivity.class);
+                startActivity(intent);
+                break;
+            }
+            case R.id.nav_stat: {
+                StatFragment fragment = new StatFragment();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, fragment, StatFragment.TAG)
+                        .commit();
+                break;
+            }
+            case R.id.nav_chat: {
+                ChatFragment fragment = new ChatFragment();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, fragment, ChatFragment.TAG)
+                        .commit();
+                break;
+            }
+            case R.id.nav_add_user: {
+                AddUserFragment fragment = new AddUserFragment();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, fragment, AddUserFragment.TAG)
+                        .commit();
+                break;
+            }
+            case R.id.nav_users_list: {
+                UsersListFragment fragment = new UsersListFragment();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, fragment, UsersListFragment.TAG)
+                        .commit();
+                break;
+            }
+            case R.id.nav_poker: {
+                PokerFragment fragment = new PokerFragment();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, fragment, PokerFragment.TAG)
+                        .commit();
+                break;
+            }
+            case R.id.nav_blackjack: {
+                BlackjackFragment fragment = new BlackjackFragment();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, fragment, BlackjackFragment.TAG)
+                        .commit();
+                break;
+            }
+            case R.id.nav_baccarat: {
+                BaccaratFragment fragment = new BaccaratFragment();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, fragment, BaccaratFragment.TAG)
+                        .commit();
+                break;
+            }
+            case R.id.nav_roulette: {
+                RouletteFragment fragment = new RouletteFragment();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, fragment, RouletteFragment.TAG)
+                        .commit();
+                break;
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

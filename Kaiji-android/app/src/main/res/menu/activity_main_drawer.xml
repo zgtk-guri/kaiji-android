@@ -21,7 +21,7 @@
                     android:icon="@drawable/ic_menu_add_user"
                     android:title="新規登録"/>
                 <item
-                    android:id="@+id/nav_user_list"
+                    android:id="@+id/nav_users_list"
                     android:icon="@drawable/ic_menu_users"
                     android:title="一覧"/>
             </group>
@@ -55,5 +55,9 @@
             android:icon="@drawable/ic_menu_settings"
             android:checkable="false"
             android:title="設定"/>
+        <item
+            android:id="@+id/nav_dev_mode"
+            android:checkable="false"
+            android:title="開発者モード"/>
     </group>
 </menu>

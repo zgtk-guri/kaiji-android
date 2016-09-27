@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.protobuf'
+
 
 android {
     compileSdkVersion 23
@@ -19,10 +21,45 @@ android {
     }
 }
 
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        // ASSUMES GRADLE 2.12 OR HIGHER. Use plugin version 0.7.5 with earlier
+        // gradle versions
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.0'
+    }
+}
+
+protobuf {
+    protoc {
+        // The version of protoc must match protobuf-java. If you don't depend on
+        // protobuf-java directly, you will be transitively depending on the
+        // protobuf-java version that grpc depends on.
+        artifact = "com.google.protobuf:protoc:3.0.0"
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.0.0'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:support-v4:23.4.0'
     compile 'com.android.support:design:23.4.0'
+
+    compile 'io.grpc:grpc-okhttp:1.0.0'
+    compile 'io.grpc:grpc-protobuf-lite:1.0.0'
+    compile 'io.grpc:grpc-stub:1.0.0'
 }
