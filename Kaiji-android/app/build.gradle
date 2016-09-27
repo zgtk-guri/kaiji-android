@@ -62,4 +62,6 @@ dependencies {
     compile 'io.grpc:grpc-okhttp:1.0.0'
     compile 'io.grpc:grpc-protobuf-lite:1.0.0'
     compile 'io.grpc:grpc-stub:1.0.0'
+
+    compile 'com.google.android.gms:play-services-vision:8.3.0'
 }
