@@ -31,6 +31,8 @@ public class ScanQrActivity extends AppCompatActivity implements SurfaceHolder.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_qr);
 
+        setTitle("QRコード読み取り");
+
         // Initialize
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(this)
                 .setBarcodeFormats(Barcode.QR_CODE)
