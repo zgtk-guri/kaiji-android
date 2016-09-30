@@ -19,5 +19,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/dev_mode_qr_test" />
+
+        <Button
+            android:text="Send Ping"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dev_mode_grpc_ping" />
     </LinearLayout>
 </RelativeLayout>
