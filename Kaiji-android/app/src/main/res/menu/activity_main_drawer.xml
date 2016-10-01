@@ -41,9 +41,6 @@
             <item
                 android:id="@+id/nav_baccarat"
                 android:title="バカラ"/>
-            <item
-                android:id="@+id/nav_roulette"
-                android:title="ルーレット"/>
             </group>
         </menu>
     </item>

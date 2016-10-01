@@ -115,13 +115,6 @@ public class MainActivity extends AppCompatActivity
                         .commit();
                 break;
             }
-            case R.id.nav_roulette: {
-                RouletteFragment fragment = new RouletteFragment();
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, fragment, RouletteFragment.TAG)
-                        .commit();
-                break;
-            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
