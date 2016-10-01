@@ -38,6 +38,7 @@ public class DeveloperModeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_developer_mode);
+        setTitle("Developer mode");
 
         findViewById(R.id.dev_mode_qr_test).setOnClickListener(new View.OnClickListener() {
             @Override
