@@ -2,6 +2,7 @@ package net.gurigoro.kaiji_android;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -61,9 +62,13 @@ public class DeveloperModeActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... params) {
             try {
+                String address = PreferenceManager.getDefaultSharedPreferences(DeveloperModeActivity.this)
+                        .getString(getString(R.string.pref_key_server_address),"");
+                int port = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(DeveloperModeActivity.this)
+                        .getString(getString(R.string.pref_key_server_port), "1257"));
                 ManagedChannel channel =
                         ManagedChannelBuilder.
-                                forAddress("192.168.100.104", 1257).
+                                forAddress(address, port).
                                 usePlaintext(true).
                                 build();
                 KaijiGrpc.KaijiBlockingStub stub = KaijiGrpc.newBlockingStub(channel);
@@ -73,7 +78,8 @@ public class DeveloperModeActivity extends AppCompatActivity {
                         .setTime(System.currentTimeMillis())
                         .build();
                 KaijiOuterClass.PingReply pingReply = stub.ping(pingRequest);
-                return pingReply.getMessage();
+                long period = System.currentTimeMillis() - pingReply.getTime();
+                return pingReply.getMessage() + period;
             } catch (Exception e) {
                 e.printStackTrace();
             }

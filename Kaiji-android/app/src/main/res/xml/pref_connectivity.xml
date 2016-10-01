@@ -1,10 +1,5 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="offline_mode"
-        android:summary="ゲームサーバに接続せず、スタンドアロンで動作します。"
-        android:title="オフラインモード" />
 
     <EditTextPreference
         android:capitalize="characters"
@@ -15,7 +10,6 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="サーバアドレス" />
-
     <EditTextPreference
         android:capitalize="characters"
         android:defaultValue="1257"
@@ -25,5 +19,10 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="サーバポート番号"/>
+    <EditTextPreference
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="アクセスキー"
+        android:key="@string/pref_key_access_key" />
 
 </PreferenceScreen>
