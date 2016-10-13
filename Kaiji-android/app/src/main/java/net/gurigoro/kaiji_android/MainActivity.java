@@ -77,13 +77,14 @@ public class MainActivity extends AppCompatActivity
                         .commit();
                 break;
             }
-            case R.id.nav_chat: {
+            // 封印
+            /* case R.id.nav_chat: {
                 ChatFragment fragment = new ChatFragment();
                 getFragmentManager().beginTransaction()
                         .replace(R.id.main_container, fragment, ChatFragment.TAG)
                         .commit();
                 break;
-            }
+            } */
             case R.id.nav_add_user: {
                 AddUserFragment fragment = new AddUserFragment();
                 getFragmentManager().beginTransaction()
