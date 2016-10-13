@@ -1,9 +1,11 @@
 package net.gurigoro.kaiji_android;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +18,8 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private int currentSelectedMenuItemId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_stat);
+        currentSelectedMenuItemId = R.id.nav_stat;
 
         getFragmentManager().beginTransaction()
                 .replace(R.id.main_container, new StatFragment(), StatFragment.TAG)
@@ -51,15 +56,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void changeCurrentFragment(int nextId){
 
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        switch (id) {
+        switch (nextId) {
             case R.id.nav_setting: {
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(intent);
@@ -121,6 +120,48 @@ public class MainActivity extends AppCompatActivity
                 break;
             }
         }
+        currentSelectedMenuItemId = nextId;
+    }
+
+    private void showLeaveGameSectionAlertDialog(final int nextId){
+        boolean isNeedDialog = false;
+        if(currentSelectedMenuItemId == R.id.nav_poker
+                || currentSelectedMenuItemId == R.id.nav_blackjack
+                || currentSelectedMenuItemId == R.id.nav_poker){
+            isNeedDialog =  true;
+        }
+        if(!isNeedDialog) {
+            changeCurrentFragment(nextId);
+            return;
+        }
+
+        new AlertDialog.Builder(this).setTitle("ゲームの内容が消えます")
+                .setMessage("別の画面に移動すると実施中のゲームデータが消えます。続行しますか？")
+                .setPositiveButton("はい", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        changeCurrentFragment(nextId);
+                    }
+                })
+                .setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                        navigationView.setCheckedItem(currentSelectedMenuItemId);
+                    }
+                })
+                .show();
+    }
+
+
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        showLeaveGameSectionAlertDialog(id);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
