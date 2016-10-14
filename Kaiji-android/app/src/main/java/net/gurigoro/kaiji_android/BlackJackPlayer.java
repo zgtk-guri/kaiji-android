@@ -22,6 +22,8 @@ public class BlackJackPlayer {
     List<TrumpCard> cards[];
     long cardPoint[];
 
+    boolean isBetted = false;
+
     boolean isSplit;
     boolean isBust;
     boolean canHit;
@@ -29,6 +31,14 @@ public class BlackJackPlayer {
     boolean canSplit;
     boolean canDoubleDown;
 
+
+    public boolean isBetted() {
+        return isBetted;
+    }
+
+    public void setBetted(boolean betted) {
+        isBetted = betted;
+    }
 
     public int getUserId() {
         return userId;
