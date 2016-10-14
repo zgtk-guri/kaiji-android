@@ -62,10 +62,8 @@ public class DeveloperModeActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... params) {
             try {
-                String address = PreferenceManager.getDefaultSharedPreferences(DeveloperModeActivity.this)
-                        .getString(getString(R.string.pref_key_server_address),"");
-                int port = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(DeveloperModeActivity.this)
-                        .getString(getString(R.string.pref_key_server_port), "1257"));
+                String address = ConnectConfig.getServerAddress(DeveloperModeActivity.this);
+                int port = ConnectConfig.getServerPort(DeveloperModeActivity.this);
                 ManagedChannel channel =
                         ManagedChannelBuilder.
                                 forAddress(address, port).
