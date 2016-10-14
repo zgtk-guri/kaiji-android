@@ -98,8 +98,8 @@ public class BlackjackFragment extends Fragment {
 
                     @Override
                     protected void onPostExecute(KaijiOuterClass.GetUserReply reply) {
+                        dialog.dismiss();
                         if(ConnectConfig.OFFLINE) {
-                            dialog.hide();
                             BlackJackPlayer player = new BlackJackPlayer();
                             player.setUserId(id);
                             player.setUserName(String.valueOf(id));
@@ -113,7 +113,6 @@ public class BlackjackFragment extends Fragment {
                                         .setPositiveButton("OK", null)
                                         .show();
                             }
-                            dialog.hide();
                             BlackJackPlayer player = new BlackJackPlayer();
                             player.setUserId(id);
                             player.setUserName(reply.getName());
@@ -121,7 +120,6 @@ public class BlackjackFragment extends Fragment {
                             players.add(player);
                             adapter.notifyDataSetChanged();
                         }else{
-                            dialog.hide();
                             new AlertDialog.Builder(getContext())
                                     .setTitle("通信に失敗しました")
                                     .setMessage("ユーザー情報取得に失敗しました。再試行するか、管理者に問い合わせてください")
@@ -226,15 +224,14 @@ public class BlackjackFragment extends Fragment {
 
                     @Override
                     protected void onPostExecute(Boolean result) {
+                        dialog.dismiss();
                         if(result){
-                            dialog.hide();
                             entryButton.setVisibility(View.GONE);
                             startButton.setVisibility(View.GONE);
 
                             adapter.setGameStatus(BlackJackSectionAdapter.BlackJackGameStatus.BETTING);
                             adapter.notifyDataSetChanged();
                         }else{
-                            dialog.hide();
                             new AlertDialog.Builder(getContext())
                                     .setTitle("通信に失敗しました")
                                     .setMessage("エントリーに失敗しました。再試行するか、管理者に問い合わせてください")
