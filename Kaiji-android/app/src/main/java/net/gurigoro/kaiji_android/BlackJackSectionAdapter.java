@@ -30,6 +30,7 @@ public class BlackJackSectionAdapter extends BaseAdapter {
     LayoutInflater inflater;
     List<BlackJackPlayer> players;
 
+    BlackJackGameStatus gameStatus = BlackJackGameStatus.ENTRY;
     public BlackJackGameStatus getGameStatus() {
         return gameStatus;
     }
@@ -38,8 +39,15 @@ public class BlackJackSectionAdapter extends BaseAdapter {
         this.gameStatus = gameStatus;
     }
 
-    BlackJackGameStatus gameStatus = BlackJackGameStatus.ENTRY;
+    long gameRoomId;
 
+    public long getGameRoomId() {
+        return gameRoomId;
+    }
+
+    public void setGameRoomId(long gameRoomId) {
+        this.gameRoomId = gameRoomId;
+    }
 
     public List<BlackJackPlayer> getPlayers() {
         return players;

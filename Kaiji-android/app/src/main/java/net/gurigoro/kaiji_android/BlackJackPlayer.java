@@ -9,18 +9,18 @@ import java.util.List;
 public class BlackJackPlayer {
     public BlackJackPlayer() {
         cards = new List[2];
-        cardPoint = new int[2];
+        cardPoint = new long[2];
     }
 
     // if userId is -1, it's a dealer.
     public static final int DEALER_ID = -1;
     int userId;
     String userName;
-    int userPoint;
-    int betPoint;
+    long userPoint;
+    long betPoint;
 
     List<TrumpCard> cards[];
-    int cardPoint[];
+    long cardPoint[];
 
     boolean isSplit;
     boolean isBust;
@@ -46,19 +46,19 @@ public class BlackJackPlayer {
         this.userName = userName;
     }
 
-    public int getUserPoint() {
+    public long getUserPoint() {
         return userPoint;
     }
 
-    public void setUserPoint(int userPoint) {
+    public void setUserPoint(long userPoint) {
         this.userPoint = userPoint;
     }
 
-    public int getBetPoint() {
+    public long getBetPoint() {
         return betPoint;
     }
 
-    public void setBetPoint(int betPoint) {
+    public void setBetPoint(long betPoint) {
         this.betPoint = betPoint;
     }
 
@@ -70,11 +70,11 @@ public class BlackJackPlayer {
         this.cards = cards;
     }
 
-    public int[] getCardPoint() {
+    public long[] getCardPoint() {
         return cardPoint;
     }
 
-    public void setCardPoint(int[] cardPoint) {
+    public void setCardPoint(long[] cardPoint) {
         this.cardPoint = cardPoint;
     }
 
