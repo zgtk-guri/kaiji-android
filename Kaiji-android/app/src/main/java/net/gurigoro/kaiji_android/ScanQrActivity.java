@@ -1,7 +1,12 @@
 package net.gurigoro.kaiji_android;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
@@ -25,6 +30,23 @@ public class ScanQrActivity extends AppCompatActivity implements SurfaceHolder.C
 
     public final static int TAG = 1858;
     public final static String QR_VALUE_KEY = "qr_value";
+    static final int REQUEST_CODE = 1;
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == REQUEST_CODE){
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                surfaceView.getHolder().addCallback(this);
+            }else{
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                    ActivityCompat.requestPermissions(this, new String[]{
+                            Manifest.permission.CAMERA
+                    }, REQUEST_CODE);
+                }
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,10 +94,21 @@ public class ScanQrActivity extends AppCompatActivity implements SurfaceHolder.C
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        try {
-            cameraSource.start(holder);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            surfaceView.getHolder().removeCallback(this);
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                ActivityCompat.requestPermissions(this, new String[]{
+                        Manifest.permission.CAMERA
+                }, REQUEST_CODE);
+            }
+        } else {
+            try {
+                cameraSource.start(holder);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
