@@ -15,8 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import net.gurigoro.kaiji.BlackJackGrpc;
-import net.gurigoro.kaiji.BlackJackOuterClass;
+import net.gurigoro.kaiji.blackjack.BlackJackGrpc;
+import net.gurigoro.kaiji.blackjack.BlackJackOuterClass;
 
 import java.util.List;
 

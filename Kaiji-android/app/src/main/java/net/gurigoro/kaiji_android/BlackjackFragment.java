@@ -14,8 +14,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 
-import net.gurigoro.kaiji.BlackJackGrpc;
-import net.gurigoro.kaiji.BlackJackOuterClass;
+import net.gurigoro.kaiji.blackjack.BlackJackGrpc;
+import net.gurigoro.kaiji.blackjack.BlackJackOuterClass;
 import net.gurigoro.kaiji.KaijiGrpc;
 import net.gurigoro.kaiji.KaijiOuterClass;
 
