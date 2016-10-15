@@ -3,7 +3,7 @@
     package="net.gurigoro.kaiji_android">
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -29,7 +29,8 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity android:name=".DeveloperModeActivity" />
-        <activity android:name=".ScanQrActivity"></activity>
+        <activity android:name=".ScanQrActivity" />
+        <activity android:name=".CardInputActivity"></activity>
     </application>
 
 </manifest>

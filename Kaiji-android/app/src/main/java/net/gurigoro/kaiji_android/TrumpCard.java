@@ -18,10 +18,10 @@ public class TrumpCard {
     }
 
     // 1 - 13
-    int number;
-    TrumpSuit suit;
-    boolean isFaceDown;
-    boolean isJoker;
+    private int number;
+    private TrumpSuit suit;
+    private boolean isFaceDown;
+    private boolean isJoker;
 
     public TrumpCard(){
         number = 0;
