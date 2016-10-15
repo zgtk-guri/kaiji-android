@@ -5,11 +5,13 @@ import android.graphics.drawable.Drawable;
 
 import net.gurigoro.kaiji.Trump;
 
+import java.io.Serializable;
+
 /**
  * Created by takahito on 2016/10/14.
  */
 
-public class TrumpCard {
+public class TrumpCard implements Serializable {
     public enum TrumpSuit{
         SPADE,
         CLUB,
