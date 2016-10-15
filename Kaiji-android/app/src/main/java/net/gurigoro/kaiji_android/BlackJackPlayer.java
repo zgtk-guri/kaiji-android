@@ -1,5 +1,6 @@
 package net.gurigoro.kaiji_android;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,28 +10,39 @@ import java.util.List;
 public class BlackJackPlayer {
     public BlackJackPlayer() {
         cards = new List[2];
+        cards[0] = new ArrayList<>();
+        cards[1] = new ArrayList<>();
         cardPoint = new long[2];
     }
 
     // if userId is -1, it's a dealer.
     public static final int DEALER_ID = -1;
-    int userId;
-    String userName;
-    long userPoint;
-    long betPoint;
+    private int userId;
+    private String userName;
+    private long userPoint;
+    private long betPoint;
 
-    List<TrumpCard> cards[];
-    long cardPoint[];
+    private List<TrumpCard> cards[];
+    private long cardPoint[];
 
-    boolean isBetted = false;
+    private boolean isBetted = false;
+    private boolean isFirstDealed = false;
 
-    boolean isSplit;
-    boolean isBust;
-    boolean canHit;
-    boolean canStand;
-    boolean canSplit;
-    boolean canDoubleDown;
+    private boolean isSplit;
+    private boolean isBust;
+    private boolean canHit;
+    private boolean canStand;
+    private boolean canSplit;
+    private boolean canDoubleDown;
 
+
+    public boolean isFirstDealed() {
+        return isFirstDealed;
+    }
+
+    public void setFirstDealed(boolean firstDealed) {
+        isFirstDealed = firstDealed;
+    }
 
     public boolean isBetted() {
         return isBetted;

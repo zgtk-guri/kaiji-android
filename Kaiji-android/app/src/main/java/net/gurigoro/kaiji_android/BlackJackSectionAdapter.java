@@ -209,7 +209,7 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                             protected void onPostExecute(Boolean result) {
                                 if(result){
                                     bettingButton.setText("ベット済");
-                                    bettingPointField.setText(String.valueOf(player.betPoint / 100));
+                                    bettingPointField.setText(String.valueOf(player.getBetPoint() / 100));
 
                                     boolean allBetted = true;
                                     for (BlackJackPlayer blackJackPlayer : players) {
