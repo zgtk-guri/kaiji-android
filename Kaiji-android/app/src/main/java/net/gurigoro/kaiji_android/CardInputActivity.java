@@ -15,11 +15,14 @@ import java.io.Serializable;
 public class CardInputActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener, NumberPicker.OnValueChangeListener{
 
     public static final String CARD_KEY = "card";
+    public static final String DATA_BUNDLE_KEY = "data_bundle";
 
     ImageView cardImageVIew;
     NumberPicker numberPicker;
     RadioGroup radioGroup;
     Button okButton, cancelButton;
+
+    Bundle bundle;
 
     TrumpCard card;
 
@@ -40,6 +43,12 @@ public class CardInputActivity extends AppCompatActivity implements RadioGroup.O
         cancelButton = (Button) findViewById(R.id.card_select_cancel_button);
 
         Intent requestIntent = getIntent();
+        if(requestIntent.hasExtra(DATA_BUNDLE_KEY)){
+            bundle = requestIntent.getBundleExtra(DATA_BUNDLE_KEY);
+        }else{
+            bundle = null;
+        }
+
         if(requestIntent.hasExtra(CARD_KEY)){
             card = (TrumpCard) requestIntent.getSerializableExtra(CARD_KEY);
             if(!card.isFaceDown()){
@@ -67,6 +76,7 @@ public class CardInputActivity extends AppCompatActivity implements RadioGroup.O
                 applyImage();
             }
         }else{
+            card = new TrumpCard();
             card.setNumber(1);
             card.setSuit(TrumpCard.TrumpSuit.SPADE);
             numberPicker.setValue(1);
@@ -74,16 +84,20 @@ public class CardInputActivity extends AppCompatActivity implements RadioGroup.O
             applyImage();
         }
 
+        card.setFaceDown(false);
+
         numberPicker.setMinValue(1);
         numberPicker.setMaxValue(13);
 
         radioGroup.setOnCheckedChangeListener(this);
+        numberPicker.setOnValueChangedListener(this);
 
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.putExtra(CARD_KEY, (Serializable) card);
+                if(bundle != null) intent.putExtra(DATA_BUNDLE_KEY, bundle);
                 setResult(RESULT_OK, intent);
                 finish();
             }
