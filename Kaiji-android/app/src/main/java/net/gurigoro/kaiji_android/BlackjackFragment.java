@@ -39,10 +39,11 @@ public class BlackjackFragment extends Fragment {
     private List<BlackJackPlayer> players;
     private BlackJackSectionAdapter adapter;
 
+    private static final int SCAN_QR_REQ_CODE = 447;
     @Override
     public void onActivityResult(final int requestCode, int resultCode, Intent data) {
-        if(requestCode == ScanQrActivity.TAG){
-            if(resultCode == Activity.RESULT_OK){
+        if(requestCode == SCAN_QR_REQ_CODE){
+            if(resultCode == RESULT_OK){
                 String idStr = data.getStringExtra(ScanQrActivity.QR_VALUE_KEY);
                 final int id = Integer.parseInt(idStr);
 
@@ -162,7 +163,7 @@ public class BlackjackFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(),ScanQrActivity.class);
-                startActivityForResult(intent, ScanQrActivity.TAG);
+                startActivityForResult(intent, SCAN_QR_REQ_CODE);
             }
         });
 

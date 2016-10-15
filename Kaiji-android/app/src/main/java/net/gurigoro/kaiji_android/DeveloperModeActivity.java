@@ -20,9 +20,11 @@ import io.grpc.ManagedChannelBuilder;
 
 public class DeveloperModeActivity extends AppCompatActivity {
 
+    private static final int SCAN_QR_REQ_CODE = 913;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == ScanQrActivity.TAG){
+        if(requestCode == SCAN_QR_REQ_CODE){
             if(resultCode == RESULT_OK){
                 Toast.makeText(
                         this,
@@ -45,7 +47,7 @@ public class DeveloperModeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DeveloperModeActivity.this, ScanQrActivity.class);
-                startActivityForResult(intent, ScanQrActivity.TAG);
+                startActivityForResult(intent, SCAN_QR_REQ_CODE);
             }
         });
 

@@ -28,7 +28,6 @@ public class ScanQrActivity extends AppCompatActivity implements SurfaceHolder.C
     private Button cancelButton;
     private CameraSource cameraSource;
 
-    public final static int TAG = 1858;
     public final static String QR_VALUE_KEY = "qr_value";
     static final int REQUEST_CODE = 1;
 
