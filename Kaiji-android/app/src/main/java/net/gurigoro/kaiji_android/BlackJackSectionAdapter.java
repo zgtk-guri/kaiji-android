@@ -11,6 +11,7 @@ import android.view.animation.Interpolator;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -89,7 +90,7 @@ public class BlackJackSectionAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, final ViewGroup parent) {
         convertView = inflater.inflate(R.layout.player_section,parent,false);
         final TextView playerNameTextView = (TextView) convertView.findViewById(R.id.player_name_textview);
         TextView playerSubValueTextView = (TextView) convertView.findViewById(R.id.player_sub_value_textview);
@@ -238,6 +239,52 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                 break;
             }
             case FIRST_DEAL: {
+                if(player.getUserId() != BlackJackPlayer.DEALER_ID) {
+                    playerSubValueTextView.setText("ベット " + player.getBetPoint() + "Pt.");
+                }
+
+                boolean allCardSet = true;
+                for (BlackJackPlayer blackJackPlayer : players) {
+                    if(blackJackPlayer.getUserId() == BlackJackPlayer.DEALER_ID) continue;
+                    if(!blackJackPlayer.isFirstDealed()) allCardSet = false;
+                }
+                if(allCardSet){
+                    gameStatus = BlackJackGameStatus.ACTIONS;
+                    notifyDataSetChanged();
+                    break;
+                }
+
+
+                View innerView = inflater.inflate(R.layout.bj_first_deal_layout, null);
+                innerLayout.addView(innerView);
+                ImageView cardOneImageView = (ImageView) innerView.findViewById(R.id.bj_first_deal_card_1);
+                ImageView cardTwoImageView = (ImageView) innerView.findViewById(R.id.bj_first_deal_card_2);
+                View.OnClickListener onClickListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ((ListView)parent).performItemClick(v, position, v.getId());
+                    }
+                };
+                if(player.getCards()[0].size() == 0){
+                    cardOneImageView.setImageDrawable(context.getDrawable(R.drawable.z01));
+                    cardTwoImageView.setVisibility(View.GONE);
+                    cardOneImageView.setOnClickListener(onClickListener);
+                }else if(player.getCards()[0].size() == 1){
+                    cardOneImageView.setImageDrawable(player.getCards()[0].get(0).getDrawable(context));
+                    cardOneImageView.setOnClickListener(null);
+                    cardTwoImageView.setImageDrawable(context.getDrawable(R.drawable.z01));
+                    cardTwoImageView.setVisibility(View.VISIBLE);
+                    if(player.getUserId() != BlackJackPlayer.DEALER_ID) {
+                        cardTwoImageView.setOnClickListener(onClickListener);
+                        player.setFirstDealed(true);
+                    }
+                }else{
+                    cardOneImageView.setImageDrawable(player.getCards()[0].get(0).getDrawable(context));
+                    cardOneImageView.setOnClickListener(null);
+                    cardTwoImageView.setImageDrawable(player.getCards()[0].get(1).getDrawable(context));
+                    cardTwoImageView.setOnClickListener(null);
+                    player.setFirstDealed(true);
+                }
                 break;
             }
             case ACTIONS: {

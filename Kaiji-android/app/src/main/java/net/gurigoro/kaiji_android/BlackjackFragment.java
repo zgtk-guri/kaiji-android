@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -24,6 +25,8 @@ import java.util.List;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+
+import static android.app.Activity.RESULT_OK;
 
 
 /**
@@ -40,6 +43,8 @@ public class BlackjackFragment extends Fragment {
     private BlackJackSectionAdapter adapter;
 
     private static final int SCAN_QR_REQ_CODE = 447;
+    private static final int CARD_INPUT_FIRST_DEAL_REQ_CODE = 759;
+
     @Override
     public void onActivityResult(final int requestCode, int resultCode, Intent data) {
         if(requestCode == SCAN_QR_REQ_CODE){
@@ -131,6 +136,14 @@ public class BlackjackFragment extends Fragment {
 
                 }.execute();
 
+            }
+        }else if(requestCode == CARD_INPUT_FIRST_DEAL_REQ_CODE){
+            if(resultCode == RESULT_OK) {
+                TrumpCard card = (TrumpCard) data.getSerializableExtra(CardInputActivity.CARD_KEY);
+                Bundle bundle = data.getBundleExtra(CardInputActivity.DATA_BUNDLE_KEY);
+                int position = bundle.getInt("position");
+                players.get(position).getCards()[0].add(card);
+                adapter.notifyDataSetChanged();
             }
         }
     }
@@ -242,6 +255,20 @@ public class BlackjackFragment extends Fragment {
                     }
 
                 }.execute();
+            }
+        });
+
+        mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(id == R.id.bj_first_deal_card_1 || id == R.id.bj_first_deal_card_2){
+                    // Set First Dealed Card
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("position", position);
+                    Intent intent = new Intent(getContext(), CardInputActivity.class);
+                    intent.putExtra(CardInputActivity.DATA_BUNDLE_KEY, bundle);
+                    startActivityForResult(intent, CARD_INPUT_FIRST_DEAL_REQ_CODE);
+                }
             }
         });
 
