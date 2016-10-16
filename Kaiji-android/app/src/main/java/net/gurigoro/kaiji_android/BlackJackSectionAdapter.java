@@ -412,14 +412,15 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                     cardOneImageView.setImageDrawable(context.getDrawable(R.drawable.z01));
                     cardTwoImageView.setVisibility(View.GONE);
                     cardOneImageView.setOnClickListener(onClickListener);
+                    player.setFirstDealed(false);
                 }else if(player.getCards()[0].size() == 1){
                     cardOneImageView.setImageDrawable(player.getCards()[0].get(0).getDrawable(context));
                     cardOneImageView.setOnClickListener(null);
                     cardTwoImageView.setImageDrawable(context.getDrawable(R.drawable.z01));
                     cardTwoImageView.setVisibility(View.VISIBLE);
+                    player.setFirstDealed(false);
                     if(player.getUserId() != BlackJackPlayer.DEALER_ID) {
                         cardTwoImageView.setOnClickListener(onClickListener);
-                        player.setFirstDealed(true);
                     }
                 }else{
                     cardOneImageView.setImageDrawable(player.getCards()[0].get(0).getDrawable(context));
