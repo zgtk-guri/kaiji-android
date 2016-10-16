@@ -523,7 +523,7 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                     View.OnClickListener onClickListener  = new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            ((ListView)parent).performItemClick(v, position, v.getId());
+                            ((ListView)parent).performItemClick(v, position, v.getTag() != null ? ((Integer)v.getTag()).longValue() : 0);
                         }
                     };
 
