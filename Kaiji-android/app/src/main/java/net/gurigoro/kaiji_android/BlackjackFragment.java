@@ -155,145 +155,251 @@ public class BlackjackFragment extends Fragment {
                 Bundle bundle = data.getBundleExtra(CardInputActivity.DATA_BUNDLE_KEY);
                 final int position = bundle.getInt("position");
                 final long gameRoomId = adapter.getGameRoomId();
-                final int handsIndex = bundle.getInt("handsindex");
 
-                final ProgressDialog dialog = new ProgressDialog(getContext());
-                dialog.setTitle("通信中");
-                dialog.setMessage("ヒットしています");
-                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                dialog.setCancelable(false);
-                dialog.show();
+                if(players.get(position).getUserId() != BlackJackPlayer.DEALER_ID) {
+                    final int handsIndex = bundle.getInt("handsindex");
 
-                new AsyncTask<Void, Void, Boolean>(){
+                    final ProgressDialog dialog = new ProgressDialog(getContext());
+                    dialog.setTitle("通信中");
+                    dialog.setMessage("ヒットしています");
+                    dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    dialog.setCancelable(false);
+                    dialog.show();
 
-                    @Override
-                    protected Boolean doInBackground(Void... params) {
-                        if(ConnectConfig.OFFLINE) {
-                            BlackJackPlayer player = players.get(position);
-                            player.getCards()[handsIndex].add(card);
-                            player.getCardPoint()[handsIndex] += card.getNumber();
-                            if(player.getCardPoint()[handsIndex] > 21){
-                                if(handsIndex == 0){
-                                    player.setBust(true);
-                                    player.setCanHit(false);
-                                    player.setCanStand(false);
-                                }else{
-                                    player.setBustSecondHands(true);
-                                    player.setCanHitSecondHands(false);
-                                    player.setCanStandSecondHands(false);
-                                }
-                            }else{
-                                if(handsIndex == 0){
-                                    player.setCanHit(true);
-                                    player.setCanStand(true);
-                                }else{
-                                    player.setCanHitSecondHands(true);
-                                    player.setCanStandSecondHands(true);
-                                }
-                            }
-                            player.setCanDoubleDown(false);
-                            player.setCanSplit(false);
-                            return true;
-                        }else{
-                            try {
-                                String addr = ConnectConfig.getServerAddress(getContext());
-                                String key = ConnectConfig.getAccessKey(getContext());
-                                int port = ConnectConfig.getServerPort(getContext());
+                    new AsyncTask<Void, Void, Boolean>() {
 
-                                ManagedChannel channel = ManagedChannelBuilder
-                                        .forAddress(addr, port)
-                                        .usePlaintext(true)
-                                        .build();
-                                BlackJackGrpc.BlackJackBlockingStub stub = BlackJackGrpc.newBlockingStub(channel);
-
-                                BlackJackOuterClass.HitRequest.Builder builder = BlackJackOuterClass.HitRequest.newBuilder()
-                                        .setAccessToken(key)
-                                        .setGameRoomId(gameRoomId)
-                                        .setUserId(players.get(position).getUserId())
-                                        .setHandsIndex(handsIndex)
-                                        .setCard(card.getGrpcTrumpCard());
-
-                                BlackJackOuterClass.HitReply reply = stub.hit(builder.build());
-
-                                if(!reply.getIsSucceed()) return false;
-
+                        @Override
+                        protected Boolean doInBackground(Void... params) {
+                            if (ConnectConfig.OFFLINE) {
                                 BlackJackPlayer player = players.get(position);
-                                player.getCardPoint()[handsIndex] = reply.getCardPoints();
                                 player.getCards()[handsIndex].add(card);
+                                player.getCardPoint()[handsIndex] += card.getNumber();
+                                if (player.getCardPoint()[handsIndex] > 21) {
+                                    if (handsIndex == 0) {
+                                        player.setBust(true);
+                                        player.setCanHit(false);
+                                        player.setCanStand(false);
+                                    } else {
+                                        player.setBustSecondHands(true);
+                                        player.setCanHitSecondHands(false);
+                                        player.setCanStandSecondHands(false);
+                                    }
+                                } else {
+                                    if (handsIndex == 0) {
+                                        player.setCanHit(true);
+                                        player.setCanStand(true);
+                                    } else {
+                                        player.setCanHitSecondHands(true);
+                                        player.setCanStandSecondHands(true);
+                                    }
+                                }
                                 player.setCanDoubleDown(false);
                                 player.setCanSplit(false);
-                                if(handsIndex == 0){
-                                    player.setBust(reply.getIsBusted());
-                                    player.setCanHit(false);
-                                    player.setCanStand(false);
-                                    for (BlackJackOuterClass.PlayerAction action : reply.getAllowedActionsList()) {
-                                        switch(action){
-                                            case UNKNOWN:
-                                                break;
-                                            case HIT:
-                                                player.setCanHit(true);
-                                                break;
-                                            case STAND:
-                                                player.setCanStand(true);
-                                                break;
-                                            case SPLIT:
-                                                break;
-                                            case DOUBLEDOWN:
-                                                break;
-                                            case UNRECOGNIZED:
-                                                break;
-                                        }
-                                    }
-
-                                }else{
-                                    player.setBustSecondHands(reply.getIsBusted());
-                                    player.setCanHitSecondHands(false);
-                                    player.setCanStandSecondHands(false);
-                                    for (BlackJackOuterClass.PlayerAction action : reply.getAllowedActionsList()) {
-                                        switch (action){
-                                            case UNKNOWN:
-                                                break;
-                                            case HIT:
-                                                player.setCanHitSecondHands(true);
-                                                break;
-                                            case STAND:
-                                                player.setCanStandSecondHands(true);
-                                                break;
-                                            case SPLIT:
-                                                break;
-                                            case DOUBLEDOWN:
-                                                break;
-                                            case UNRECOGNIZED:
-                                                break;
-                                        }
-                                    }
-                                }
-
                                 return true;
+                            } else {
+                                try {
+                                    String addr = ConnectConfig.getServerAddress(getContext());
+                                    String key = ConnectConfig.getAccessKey(getContext());
+                                    int port = ConnectConfig.getServerPort(getContext());
+
+                                    ManagedChannel channel = ManagedChannelBuilder
+                                            .forAddress(addr, port)
+                                            .usePlaintext(true)
+                                            .build();
+                                    BlackJackGrpc.BlackJackBlockingStub stub = BlackJackGrpc.newBlockingStub(channel);
+
+                                    BlackJackOuterClass.HitRequest.Builder builder = BlackJackOuterClass.HitRequest.newBuilder()
+                                            .setAccessToken(key)
+                                            .setGameRoomId(gameRoomId)
+                                            .setUserId(players.get(position).getUserId())
+                                            .setHandsIndex(handsIndex)
+                                            .setCard(card.getGrpcTrumpCard());
+
+                                    BlackJackOuterClass.HitReply reply = stub.hit(builder.build());
+
+                                    if (!reply.getIsSucceed()) return false;
+
+                                    BlackJackPlayer player = players.get(position);
+                                    player.getCardPoint()[handsIndex] = reply.getCardPoints();
+                                    player.getCards()[handsIndex].add(card);
+                                    player.setCanDoubleDown(false);
+                                    player.setCanSplit(false);
+                                    if (handsIndex == 0) {
+                                        player.setBust(reply.getIsBusted());
+                                        player.setCanHit(false);
+                                        player.setCanStand(false);
+                                        for (BlackJackOuterClass.PlayerAction action : reply.getAllowedActionsList()) {
+                                            switch (action) {
+                                                case UNKNOWN:
+                                                    break;
+                                                case HIT:
+                                                    player.setCanHit(true);
+                                                    break;
+                                                case STAND:
+                                                    player.setCanStand(true);
+                                                    break;
+                                                case SPLIT:
+                                                    break;
+                                                case DOUBLEDOWN:
+                                                    break;
+                                                case UNRECOGNIZED:
+                                                    break;
+                                            }
+                                        }
+
+                                    } else {
+                                        player.setBustSecondHands(reply.getIsBusted());
+                                        player.setCanHitSecondHands(false);
+                                        player.setCanStandSecondHands(false);
+                                        for (BlackJackOuterClass.PlayerAction action : reply.getAllowedActionsList()) {
+                                            switch (action) {
+                                                case UNKNOWN:
+                                                    break;
+                                                case HIT:
+                                                    player.setCanHitSecondHands(true);
+                                                    break;
+                                                case STAND:
+                                                    player.setCanStandSecondHands(true);
+                                                    break;
+                                                case SPLIT:
+                                                    break;
+                                                case DOUBLEDOWN:
+                                                    break;
+                                                case UNRECOGNIZED:
+                                                    break;
+                                            }
+                                        }
+                                    }
+
+                                    return true;
 
 
-                            }catch (Exception e){
-                                e.printStackTrace();
-                                return false;
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    return false;
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    protected void onPostExecute(Boolean result) {
-                        dialog.dismiss();
-                        if(result){
-                            adapter.notifyDataSetChanged();
-                        }else{
-                            new AlertDialog.Builder(getContext())
-                                    .setTitle("通信に失敗しました")
-                                    .setMessage("ヒットに失敗しました。再試行するか、管理者に問い合わせてください")
-                                    .setPositiveButton("OK", null)
-                                    .show();
+                        @Override
+                        protected void onPostExecute(Boolean result) {
+                            dialog.dismiss();
+                            if (result) {
+                                adapter.notifyDataSetChanged();
+                            } else {
+                                new AlertDialog.Builder(getContext())
+                                        .setTitle("通信に失敗しました")
+                                        .setMessage("ヒットに失敗しました。再試行するか、管理者に問い合わせてください")
+                                        .setPositiveButton("OK", null)
+                                        .show();
+                            }
                         }
-                    }
 
-                }.execute();
+                    }.execute();
+
+                }else{
+                    final ProgressDialog dialog = new ProgressDialog(getContext());
+                    dialog.setTitle("通信中");
+                    dialog.setMessage("ヒットしています");
+                    dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    dialog.setCancelable(false);
+                    dialog.show();
+
+                    new AsyncTask<Void, Void, Boolean>() {
+
+                        @Override
+                        protected Boolean doInBackground(Void... params) {
+                            if (ConnectConfig.OFFLINE) {
+                                BlackJackPlayer dealer = players.get(position);
+                                dealer.getCards()[0].add(card);
+                                if(dealer.getCardPoint()[0] == 0){
+                                    dealer.getCardPoint()[0] = dealer.getCards()[0].get(0).getNumber();xxxx
+                                }
+                                dealer.getCardPoint()[0] += card.getNumber();
+                                if (dealer.getCardPoint()[0] > 21) {
+                                    dealer.setBust(true);
+                                    dealer.setCanHit(false);
+                                    dealer.setCanStand(false);
+                                } else if(dealer.getCardPoint()[0] > 16){
+                                    dealer.setCanHit(false);
+                                    dealer.setCanStand(false);
+                                    dealer.setBust(false);
+                                }else{
+                                    dealer.setCanHit(true);
+                                    dealer.setCanStand(false);
+                                    dealer.setBust(false);
+                                }
+                                return true;
+                            } else {
+                                try {
+                                    String addr = ConnectConfig.getServerAddress(getContext());
+                                    String key = ConnectConfig.getAccessKey(getContext());
+                                    int port = ConnectConfig.getServerPort(getContext());
+
+                                    ManagedChannel channel = ManagedChannelBuilder
+                                            .forAddress(addr, port)
+                                            .usePlaintext(true)
+                                            .build();
+                                    BlackJackGrpc.BlackJackBlockingStub stub = BlackJackGrpc.newBlockingStub(channel);
+
+                                    BlackJackOuterClass.SetNextDealersCardRequest.Builder builder = BlackJackOuterClass.SetNextDealersCardRequest.newBuilder()
+                                            .setAccessToken(key)
+                                            .setGameRoomId(gameRoomId)
+                                            .setCard(card.getGrpcTrumpCard());
+
+                                    BlackJackOuterClass.SetNextDealersCardReply reply = stub.setNextDealersCard(builder.build());
+
+                                    if (!reply.getIsSucceed()) return false;
+
+                                    BlackJackPlayer dealer = players.get(position);
+                                    dealer.getCardPoint()[0] = reply.getCardPoints();
+                                    dealer.getCards()[0].add(card);
+                                    dealer.setCanDoubleDown(false);
+                                    dealer.setCanSplit(false);
+                                    if(reply.getIsBusted()){
+                                        dealer.setBust(true);
+                                        dealer.setCanHit(false);
+                                        dealer.setCanStand(false);
+                                    }else if(reply.getShouldHit()){
+                                        dealer.setBust(false);
+                                        dealer.setCanHit(true);
+                                        dealer.setCanStand(false);
+                                    }else{
+                                        dealer.setBust(false);
+                                        dealer.setCanHit(false);
+                                        dealer.setCanStand(false);
+                                    }
+
+                                    return true;
+
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    return false;
+                                }
+                            }
+                        }
+
+                        @Override
+                        protected void onPostExecute(Boolean result) {
+                            dialog.dismiss();
+                            if (result) {
+                                if(!players.get(position).isCanHit()){
+                                    adapter.setGameStatus(BlackJackSectionAdapter.BlackJackGameStatus.RESULT);
+                                }
+                                adapter.notifyDataSetChanged();
+                            } else {
+                                new AlertDialog.Builder(getContext())
+                                        .setTitle("通信に失敗しました")
+                                        .setMessage("ヒットに失敗しました。再試行するか、管理者に問い合わせてください")
+                                        .setPositiveButton("OK", null)
+                                        .show();
+                            }
+                        }
+
+                    }.execute();
+
+                }
             }
         }else if(requestCode == CARD_INPUT_DOUBLE_DOWN_REQ_CODE){
             if(resultCode == RESULT_OK){
