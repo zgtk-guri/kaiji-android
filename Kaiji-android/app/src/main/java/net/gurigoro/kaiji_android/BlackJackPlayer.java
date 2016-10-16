@@ -25,6 +25,8 @@ public class BlackJackPlayer {
     private List<TrumpCard> cards[];
     private long cardPoint[];
 
+    private boolean isCommunicating = false;
+
     private boolean isBetted = false;
     private boolean isFirstDealed = false;
     private boolean isEndActions = false;
@@ -36,6 +38,13 @@ public class BlackJackPlayer {
     private boolean canSplit = false;
     private boolean canDoubleDown = false;
 
+    public boolean isCommunicating() {
+        return isCommunicating;
+    }
+
+    public void setCommunicating(boolean communicating) {
+        isCommunicating = communicating;
+    }
 
     public boolean isEndActions() {
         return isEndActions;

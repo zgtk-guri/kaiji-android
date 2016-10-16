@@ -46,7 +46,18 @@ public class BlackJackSectionAdapter extends BaseAdapter {
     LayoutInflater inflater;
     List<BlackJackPlayer> players;
 
+    boolean isCommunicating = false;
+
     BlackJackGameStatus gameStatus = BlackJackGameStatus.ENTRY;
+
+    public boolean isCommunicating() {
+        return isCommunicating;
+    }
+
+    public void setCommunicating(boolean communicating) {
+        isCommunicating = communicating;
+    }
+
     public BlackJackGameStatus getGameStatus() {
         return gameStatus;
     }
@@ -142,9 +153,15 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                     public void onClick(View v) {
                         final int betPoint = Integer.parseInt(bettingPointField.getText().toString()) * 100;
 
+                        if(player.isCommunicating()){
+                            return;
+                        }
+                        player.setCommunicating(true);
+
                         bettingButton.setEnabled(false);
                         bettingPointField.setEnabled(false);
                         bettingButton.setText("ベット中...");
+
                         new AsyncTask<Void, Void, Boolean>(){
 
                             @Override
@@ -235,6 +252,7 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                                             .setPositiveButton("OK", null)
                                             .show();
                                 }
+                                player.setCommunicating(false);
                             }
 
                         }.execute();
@@ -256,13 +274,17 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                     gameStatus = BlackJackGameStatus.ACTIONS;
                     notifyDataSetChanged();
 
+                    if(isCommunicating()){
+                        break;
+                    }
+                    setCommunicating(true);
+
                     final ProgressDialog dialog = new ProgressDialog(context);
                     dialog.setTitle("通信中");
                     dialog.setMessage("サーバにカード情報を送信しています。");
                     dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                     dialog.setCancelable(false);
                     dialog.show();
-
 
                     new AsyncTask<Void, Void, Boolean>(){
 
@@ -382,6 +404,7 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                         @Override
                         protected void onPostExecute(Boolean result) {
                             dialog.dismiss();
+                            setCommunicating(false);
                             if(result){
                                 notifyDataSetChanged();
                             }else{
