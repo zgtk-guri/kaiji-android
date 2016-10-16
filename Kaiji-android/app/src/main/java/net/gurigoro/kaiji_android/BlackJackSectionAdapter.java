@@ -37,6 +37,7 @@ public class BlackJackSectionAdapter extends BaseAdapter {
         BETTING,
         FIRST_DEAL,
         ACTIONS,
+        DEALER_HIT,
         RESULT
     }
 
@@ -432,7 +433,85 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                 break;
             }
             case ACTIONS: {
+                if(player.getUserId() != BlackJackPlayer.DEALER_ID){
+                    playerSubValueTextView.setTextAppearance(android.R.style.TextAppearance_Material_Large);
+                    if(player.isSplit()){
+                        playerSubValueTextView.setText(player.getCardPoint()[0] + ", " + player.getCardPoint()[1]);
+                    }else {
+                        playerSubValueTextView.setText(String.valueOf(player.getCardPoint()[0]));
+                    }
+                }
 
+                boolean allEndActions = true;
+                for (BlackJackPlayer blackJackPlayer : players) {
+                    if(blackJackPlayer.getUserId() == BlackJackPlayer.DEALER_ID) continue;
+                    if(!blackJackPlayer.isEndActions()) allEndActions = false;
+                }
+                if(allEndActions){
+                    gameStatus = BlackJackGameStatus.DEALER_HIT;
+                    notifyDataSetChanged();
+                    break;
+                }
+
+                for(int i = 0; i == 0 || player.isSplit() && i < 2; i++) {
+                    View innerView = inflater.inflate(R.layout.bj_action_layout, null);
+                    innerLayout.addView(innerView);
+                    LinearLayout cardLayout = (LinearLayout) innerView.findViewById(R.id.bj_action_card_layout);
+                    Button hitButton = (Button) innerView.findViewById(R.id.bj_action_hit_button);
+                    Button standButton = (Button) innerView.findViewById(R.id.bj_action_stand_button);
+                    Button splitButton = (Button) innerView.findViewById(R.id.bj_action_split_button);
+                    Button doubleDownButton = (Button) innerView.findViewById(R.id.bj_action_double_down_button);
+
+                    for (TrumpCard trumpCard : player.getCards()[i]) {
+                        ImageView cardImageView = new ImageView(context);
+                        cardImageView.setImageDrawable(trumpCard.getDrawable(context));
+                        cardImageView.setLayoutParams(
+                                new LinearLayout.LayoutParams(
+                                        Util.convertDpToPx(context,100),
+                                        Util.convertDpToPx(context,150)));
+                        cardImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        cardLayout.addView(cardImageView);
+                    }
+
+                    if(player.getUserId() == BlackJackPlayer.DEALER_ID){
+                        ImageView cardImageView = new ImageView(context);
+                        cardImageView.setImageDrawable(context.getDrawable(R.drawable.z01));
+                        cardImageView.setLayoutParams(
+                                new LinearLayout.LayoutParams(
+                                        Util.convertDpToPx(context,100),
+                                        Util.convertDpToPx(context,150)));
+                        cardImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        cardLayout.addView(cardImageView);
+
+                        hitButton.setVisibility(View.GONE);
+                        standButton.setVisibility(View.GONE);
+                        splitButton.setVisibility(View.GONE);
+                        doubleDownButton.setVisibility(View.GONE);
+                    }
+
+                    hitButton.setEnabled(player.isCanHit());
+                    hitButton.setId(i);
+                    standButton.setEnabled(player.isCanStand());
+                    standButton.setId(i);
+                    splitButton.setEnabled(player.isCanSplit());
+                    doubleDownButton.setEnabled(player.isCanDoubleDown());
+
+                    View.OnClickListener onClickListener  = new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ((ListView)parent).performItemClick(v, position, v.getId());
+                        }
+                    };
+
+                    hitButton.setOnClickListener(onClickListener);
+                    standButton.setOnClickListener(onClickListener);
+                    splitButton.setOnClickListener(onClickListener);
+                    doubleDownButton.setOnClickListener(onClickListener);
+                }
+
+                break;
+            }
+            case DEALER_HIT:{
                 break;
             }
             case RESULT: {

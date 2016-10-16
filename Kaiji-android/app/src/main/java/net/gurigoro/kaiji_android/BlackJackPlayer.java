@@ -27,6 +27,7 @@ public class BlackJackPlayer {
 
     private boolean isBetted = false;
     private boolean isFirstDealed = false;
+    private boolean isEndActions = false;
 
     private boolean isSplit = false;
     private boolean isBust = false;
@@ -35,6 +36,14 @@ public class BlackJackPlayer {
     private boolean canSplit = false;
     private boolean canDoubleDown = false;
 
+
+    public boolean isEndActions() {
+        return isEndActions;
+    }
+
+    public void setEndActions(boolean endActions) {
+        isEndActions = endActions;
+    }
 
     public boolean isFirstDealed() {
         return isFirstDealed;
