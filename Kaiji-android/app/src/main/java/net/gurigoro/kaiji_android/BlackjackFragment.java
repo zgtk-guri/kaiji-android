@@ -426,6 +426,78 @@ public class BlackjackFragment extends Fragment {
                     intent.putExtra(CardInputActivity.DATA_BUNDLE_KEY, bundle);
                     startActivityForResult(intent, CARD_INPUT_HIT_REQ_CODE);
 
+                }else if(view.getId() == R.id.bj_action_stand_button){
+                    final long gameRoomId = adapter.getGameRoomId();
+                    final int handsIndex = (int) id;
+
+                    final ProgressDialog dialog = new ProgressDialog(getContext());
+                    dialog.setTitle("通信中");
+                    dialog.setMessage("スタンドしています");
+                    dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    dialog.setCancelable(false);
+                    dialog.show();
+
+                    new AsyncTask<Void, Void, Boolean>(){
+
+                        @Override
+                        protected Boolean doInBackground(Void... params) {
+                            if(ConnectConfig.OFFLINE) {
+                                return true;
+                            }else{
+                                try {
+                                    String addr = ConnectConfig.getServerAddress(getContext());
+                                    String key = ConnectConfig.getAccessKey(getContext());
+                                    int port = ConnectConfig.getServerPort(getContext());
+
+                                    ManagedChannel channel = ManagedChannelBuilder
+                                            .forAddress(addr, port)
+                                            .usePlaintext(true)
+                                            .build();
+                                    BlackJackGrpc.BlackJackBlockingStub stub = BlackJackGrpc.newBlockingStub(channel);
+
+                                    BlackJackOuterClass.StandRequest.Builder builder = BlackJackOuterClass.StandRequest.newBuilder()
+                                            .setAccessToken(key)
+                                            .setGameRoomId(gameRoomId)
+                                            .setUserId(players.get(position).getUserId())
+                                            .setHandsIndex(handsIndex);
+
+                                    BlackJackOuterClass.StandReply reply = stub.stand(builder.build());
+
+                                    return reply.getIsSucceed();
+
+
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                    return false;
+                                }
+                            }
+                        }
+
+                        @Override
+                        protected void onPostExecute(Boolean result) {
+                            dialog.dismiss();
+                            if(result){
+                                BlackJackPlayer player = players.get(position);
+                                player.setCanSplit(false);
+                                player.setCanDoubleDown(false);
+                                if(handsIndex == 0){
+                                    player.setCanHit(false);
+                                    player.setCanStand(false);
+                                }else{
+                                    player.setCanHitSecondHands(false);
+                                    player.setCanStandSecondHands(false);
+                                }
+                                adapter.notifyDataSetChanged();
+                            }else{
+                                new AlertDialog.Builder(getContext())
+                                        .setTitle("通信に失敗しました")
+                                        .setMessage("スタンドに失敗しました。再試行するか、管理者に問い合わせてください")
+                                        .setPositiveButton("OK", null)
+                                        .show();
+                            }
+                        }
+
+                    }.execute();
                 }
             }
         });
