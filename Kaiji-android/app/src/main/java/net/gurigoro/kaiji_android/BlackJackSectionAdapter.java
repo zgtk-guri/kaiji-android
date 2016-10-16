@@ -512,10 +512,10 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                         doubleDownButton.setVisibility(View.GONE);
                     }
 
-                    hitButton.setEnabled(player.isCanHit());
-                    hitButton.setId(i);
-                    standButton.setEnabled(player.isCanStand());
-                    standButton.setId(i);
+                    hitButton.setEnabled(i == 0 ? player.isCanHit() : player.isCanHitSecondHands());
+                    hitButton.setTag(i);
+                    standButton.setEnabled(i == 0 ? player.isCanStand() : player.isCanStandSecondHands());
+                    standButton.setTag(i);
                     splitButton.setEnabled(player.isCanSplit());
                     doubleDownButton.setEnabled(player.isCanDoubleDown());
 
