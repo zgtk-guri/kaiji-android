@@ -498,6 +498,81 @@ public class BlackjackFragment extends Fragment {
                         }
 
                     }.execute();
+                }else if(view.getId() == R.id.bj_action_split_button){
+                    final long gameRoomId = adapter.getGameRoomId();
+
+                    final ProgressDialog dialog = new ProgressDialog(getContext());
+                    dialog.setTitle("通信中");
+                    dialog.setMessage("スプリットしています");
+                    dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    dialog.setCancelable(false);
+                    dialog.show();
+
+                    new AsyncTask<Void, Void, Boolean>(){
+
+                        @Override
+                        protected Boolean doInBackground(Void... params) {
+                            if(ConnectConfig.OFFLINE) {
+                                return true;
+                            }else{
+                                try {
+                                    String addr = ConnectConfig.getServerAddress(getContext());
+                                    String key = ConnectConfig.getAccessKey(getContext());
+                                    int port = ConnectConfig.getServerPort(getContext());
+
+                                    ManagedChannel channel = ManagedChannelBuilder
+                                            .forAddress(addr, port)
+                                            .usePlaintext(true)
+                                            .build();
+                                    BlackJackGrpc.BlackJackBlockingStub stub = BlackJackGrpc.newBlockingStub(channel);
+
+                                    BlackJackOuterClass.SplitRequest.Builder builder = BlackJackOuterClass.SplitRequest.newBuilder()
+                                            .setAccessToken(key)
+                                            .setGameRoomId(gameRoomId)
+                                            .setUserId(players.get(position).getUserId());
+
+                                    BlackJackOuterClass.SplitReply reply = stub.split(builder.build());
+
+                                    return reply.getIsSucceed();
+
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                    return false;
+                                }
+                            }
+                        }
+
+                        @Override
+                        protected void onPostExecute(Boolean result) {
+                            dialog.dismiss();
+                            if(result){
+                                BlackJackPlayer player = players.get(position);
+                                player.setSplit(true);
+                                player.setCanSplit(false);
+                                player.setCanDoubleDown(false);
+                                player.setCanHit(true);
+                                player.setCanStand(true);
+                                player.setCanHitSecondHands(true);
+                                player.setCanStandSecondHands(true);
+
+                                TrumpCard trumpCard = player.getCards()[0].get(1);
+                                player.getCards()[0].remove(1);
+                                player.getCards()[1].add(trumpCard);
+
+                                player.getCardPoint()[1] = player.getCardPoint()[0] /= 2;
+
+
+                                adapter.notifyDataSetChanged();
+                            }else{
+                                new AlertDialog.Builder(getContext())
+                                        .setTitle("通信に失敗しました")
+                                        .setMessage("スプリットに失敗しました。再試行するか、管理者に問い合わせてください")
+                                        .setPositiveButton("OK", null)
+                                        .show();
+                            }
+                        }
+
+                    }.execute();
                 }
             }
         });
