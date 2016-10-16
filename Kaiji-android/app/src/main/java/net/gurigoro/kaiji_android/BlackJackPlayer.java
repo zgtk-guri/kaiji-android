@@ -29,14 +29,40 @@ public class BlackJackPlayer {
 
     private boolean isBetted = false;
     private boolean isFirstDealed = false;
-    private boolean isEndActions = false;
 
     private boolean isSplit = false;
     private boolean isBust = false;
+    private boolean isBustSecondHands = false;
     private boolean canHit = false;
+    private boolean canHitSecondHands = false;
     private boolean canStand = false;
+    private boolean canStandSecondHands = false;
     private boolean canSplit = false;
     private boolean canDoubleDown = false;
+
+    public boolean isCanStandSecondHands() {
+        return canStandSecondHands;
+    }
+
+    public void setCanStandSecondHands(boolean canStandSecondHands) {
+        this.canStandSecondHands = canStandSecondHands;
+    }
+
+    public boolean isBustSecondHands() {
+        return isBustSecondHands;
+    }
+
+    public void setBustSecondHands(boolean bustSecondHands) {
+        isBustSecondHands = bustSecondHands;
+    }
+
+    public boolean isCanHitSecondHands() {
+        return canHitSecondHands;
+    }
+
+    public void setCanHitSecondHands(boolean canHitSecondHands) {
+        this.canHitSecondHands = canHitSecondHands;
+    }
 
     public boolean isCommunicating() {
         return isCommunicating;
@@ -44,14 +70,6 @@ public class BlackJackPlayer {
 
     public void setCommunicating(boolean communicating) {
         isCommunicating = communicating;
-    }
-
-    public boolean isEndActions() {
-        return isEndActions;
-    }
-
-    public void setEndActions(boolean endActions) {
-        isEndActions = endActions;
     }
 
     public boolean isFirstDealed() {
