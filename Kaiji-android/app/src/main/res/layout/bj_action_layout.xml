@@ -57,8 +57,7 @@
             android:layout_width="match_parent"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/grid_layout"
-            android:layout_alignParentRight="false">
+            android:layout_toLeftOf="@+id/grid_layout">
 
             <LinearLayout
                 android:layout_width="wrap_content"
