@@ -109,6 +109,7 @@ public class BlackjackFragment extends Fragment {
                             BlackJackPlayer player = new BlackJackPlayer();
                             player.setUserId(id);
                             player.setUserName(String.valueOf(id));
+                            player.setUserPoint(10000);
                             players.add(player);
                             adapter.notifyDataSetChanged();
                         }else if(reply != null){
