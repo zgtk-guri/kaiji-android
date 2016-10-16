@@ -2,6 +2,7 @@ package net.gurigoro.kaiji_android;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
@@ -14,8 +15,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import net.gurigoro.kaiji.Trump;
 import net.gurigoro.kaiji.blackjack.BlackJackGrpc;
 import net.gurigoro.kaiji.blackjack.BlackJackOuterClass;
 
@@ -251,6 +254,146 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                 if(allCardSet){
                     gameStatus = BlackJackGameStatus.ACTIONS;
                     notifyDataSetChanged();
+
+                    final ProgressDialog dialog = new ProgressDialog(context);
+                    dialog.setTitle("通信中");
+                    dialog.setMessage("サーバにカード情報を送信しています。");
+                    dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    dialog.setCancelable(false);
+                    dialog.show();
+
+
+                    new AsyncTask<Void, Void, Boolean>(){
+
+                        @Override
+                        protected Boolean doInBackground(Void... params) {
+                            if(ConnectConfig.OFFLINE) {
+                                for (BlackJackPlayer blackJackPlayer : players) {
+                                    if(blackJackPlayer.getUserId() == BlackJackPlayer.DEALER_ID) continue;
+                                    // ポイントは適当。
+                                    blackJackPlayer.getCardPoint()[0]
+                                            = blackJackPlayer.getCards()[0].get(0).getNumber()
+                                            + blackJackPlayer.getCards()[0].get(1).getNumber();
+                                    if(blackJackPlayer.getCardPoint()[0] > 21){
+                                        blackJackPlayer.setBust(true);
+                                    }
+                                    if(blackJackPlayer.getUserPoint() > (blackJackPlayer.getBetPoint() * 2) && !blackJackPlayer.isBust()) {
+                                        if (blackJackPlayer.getCards()[0].get(0).equals(blackJackPlayer.getCards()[0].get(1))) {
+                                            blackJackPlayer.setCanSplit(true);
+                                        }
+                                        blackJackPlayer.setCanDoubleDown(true);
+                                    }
+                                    if(!blackJackPlayer.isBust()){
+                                        blackJackPlayer.setCanHit(true);
+                                        blackJackPlayer.setCanStand(true);
+                                    }
+                                }
+                                return true;
+                            }else{
+                                try {
+                                    String addr = ConnectConfig.getServerAddress(context);
+                                    String key = ConnectConfig.getAccessKey(context);
+                                    int port = ConnectConfig.getServerPort(context);
+
+                                    ManagedChannel channel = ManagedChannelBuilder
+                                            .forAddress(addr, port)
+                                            .usePlaintext(true)
+                                            .build();
+                                    BlackJackGrpc.BlackJackBlockingStub stub = BlackJackGrpc.newBlockingStub(channel);
+
+                                    BlackJackOuterClass.SetFirstDealedCardsRequest.Builder playerCardsBuilder = BlackJackOuterClass.SetFirstDealedCardsRequest.newBuilder()
+                                            .setAccessToken(key)
+                                            .setGameRoomId(gameRoomId);
+                                    BlackJackOuterClass.SetFirstDealersCardRequest.Builder dealerCardBuilder = BlackJackOuterClass.SetFirstDealersCardRequest.newBuilder()
+                                            .setAccessToken(key)
+                                            .setGameRoomId(gameRoomId);
+
+                                    for (BlackJackPlayer blackJackPlayer : players) {
+                                        if(blackJackPlayer.getUserId() == BlackJackPlayer.DEALER_ID){
+                                            dealerCardBuilder.setCard(blackJackPlayer.getCards()[0].get(0).getGrpcTrumpCard());
+                                        }else {
+                                            Trump.TrumpCards.Builder builder1 = Trump.TrumpCards.newBuilder();
+                                            for (TrumpCard trumpCard : blackJackPlayer.getCards()[0]) {
+                                                builder1.addCards(trumpCard.getGrpcTrumpCard());
+                                            }
+
+                                            BlackJackOuterClass.FirstDealPlayerCards firstDealPlayerCards
+                                                    = BlackJackOuterClass.FirstDealPlayerCards.newBuilder()
+                                                    .setUserId(blackJackPlayer.getUserId())
+                                                    .setCards(builder1.build())
+                                                    .build();
+
+                                            playerCardsBuilder.addPlayerCards(firstDealPlayerCards);
+                                        }
+
+                                    }
+
+                                    BlackJackOuterClass.SetFirstDealersCardReply dealersCardReply = stub.setFirstDealersCard(dealerCardBuilder.build());
+
+                                    BlackJackOuterClass.SetFirstDealedCardsReply firstDealedCardsReply
+                                            = stub.setFirstDealedCards(playerCardsBuilder.build());
+
+                                    if(!firstDealedCardsReply.getIsSucceed() || !dealersCardReply.getIsSucceed()){
+                                        return false;
+                                    }
+
+                                    for (BlackJackOuterClass.AllowedPlayerActions actions : firstDealedCardsReply.getActionsList()) {
+                                        BlackJackPlayer blackJackPlayer = null;
+                                        for (BlackJackPlayer jackPlayer : players) {
+                                            if(jackPlayer.getUserId() == actions.getUserId()){
+                                                blackJackPlayer = jackPlayer;
+                                                break;
+                                            }
+                                        }
+                                        if(blackJackPlayer == null) continue;
+                                        blackJackPlayer.getCardPoint()[0] = actions.getCardPoints();
+
+                                        for (BlackJackOuterClass.PlayerAction action : actions.getActionsList()) {
+                                            switch (action){
+                                                case UNKNOWN:
+                                                    break;
+                                                case HIT:
+                                                    blackJackPlayer.setCanHit(true);
+                                                    break;
+                                                case STAND:
+                                                    blackJackPlayer.setCanStand(true);
+                                                    break;
+                                                case SPLIT:
+                                                    blackJackPlayer.setCanSplit(true);
+                                                    break;
+                                                case DOUBLEDOWN:
+                                                    blackJackPlayer.setCanDoubleDown(true);
+                                                    break;
+                                                case UNRECOGNIZED:
+                                                    break;
+                                            }
+                                        }
+
+                                    }
+                                    return true;
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                    return false;
+                                }
+                            }
+                        }
+
+                        @Override
+                        protected void onPostExecute(Boolean result) {
+                            dialog.dismiss();
+                            if(result){
+                                notifyDataSetChanged();
+                            }else{
+                                new AlertDialog.Builder(context)
+                                        .setTitle("通信に失敗しました")
+                                        .setMessage("管理者に問い合わせてください")
+                                        .setPositiveButton("OK", null)
+                                        .show();
+                            }
+                        }
+
+                    }.execute();
+
                     break;
                 }
 
@@ -288,6 +431,7 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                 break;
             }
             case ACTIONS: {
+
                 break;
             }
             case RESULT: {
