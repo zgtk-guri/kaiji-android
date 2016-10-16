@@ -28,12 +28,12 @@ public class BlackJackPlayer {
     private boolean isBetted = false;
     private boolean isFirstDealed = false;
 
-    private boolean isSplit;
-    private boolean isBust;
-    private boolean canHit;
-    private boolean canStand;
-    private boolean canSplit;
-    private boolean canDoubleDown;
+    private boolean isSplit = false;
+    private boolean isBust = false;
+    private boolean canHit = false;
+    private boolean canStand = false;
+    private boolean canSplit = false;
+    private boolean canDoubleDown = false;
 
 
     public boolean isFirstDealed() {
@@ -88,16 +88,8 @@ public class BlackJackPlayer {
         return cards;
     }
 
-    public void setCards(List<TrumpCard>[] cards) {
-        this.cards = cards;
-    }
-
     public long[] getCardPoint() {
         return cardPoint;
-    }
-
-    public void setCardPoint(long[] cardPoint) {
-        this.cardPoint = cardPoint;
     }
 
     public boolean isSplit() {
