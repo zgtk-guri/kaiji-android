@@ -385,9 +385,129 @@ public class BlackjackFragment extends Fragment {
                             dialog.dismiss();
                             if (result) {
                                 if(!players.get(position).isCanHit()){
-                                    adapter.setGameStatus(BlackJackSectionAdapter.BlackJackGameStatus.RESULT);
+
+                                    final ProgressDialog dialog = new ProgressDialog(getContext());
+                                    dialog.setTitle("通信中");
+                                    dialog.setMessage("結果を取得しています");
+                                    dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                                    dialog.setCancelable(false);
+                                    dialog.show();
+
+                                    new AsyncTask<Void, Void, Boolean>() {
+
+                                        @Override
+                                        protected Boolean doInBackground(Void... params) {
+                                            if (ConnectConfig.OFFLINE) {
+                                                long dealerPoint = players.get(0).getCardPoint()[0];
+                                                boolean dealerIsBust = players.get(0).isBust();
+                                                for (BlackJackPlayer player : players) {
+                                                    if(player.getUserId() == BlackJackPlayer.DEALER_ID) continue;
+                                                    if(player.isBust()){
+                                                        player.setGotPoints(-player.getBetPoint());
+                                                    }else if(dealerIsBust){
+                                                        player.setGotPoints(player.getBetPoint());
+                                                    }else if(dealerPoint > player.getCardPoint()[0]){
+                                                        player.setGotPoints(-player.getBetPoint());
+                                                    }else if(dealerPoint < player.getCardPoint()[0]){
+                                                        player.setGotPoints(player.getBetPoint());
+                                                    }else{
+                                                        player.setGotPoints(0);
+                                                    }
+                                                    if(player.isSplit()){
+                                                        if(player.isBustSecondHands()){
+                                                            player.setGotPoints(player.getGotPoints() - player.getBetPoint());
+                                                        }else if(dealerIsBust){
+                                                            player.setGotPoints(player.getGotPoints() + player.getBetPoint());
+                                                        }else if(dealerPoint > player.getCardPoint()[1]){
+                                                            player.setGotPoints(player.getGotPoints() - player.getBetPoint());
+                                                        }else if(dealerPoint < player.getCardPoint()[1]){
+                                                            player.setGotPoints(player.getGotPoints() + player.getBetPoint());
+                                                        }else{
+
+                                                        }
+                                                    }
+                                                    if(player.getGotPoints() == 0){
+                                                        player.setGameResult(BlackJackPlayer.GameResult.TIE);
+                                                    }else if(player.getGotPoints() > 0){
+                                                        player.setGameResult(BlackJackPlayer.GameResult.WIN);
+                                                    }else{
+                                                        player.setGameResult(BlackJackPlayer.GameResult.LOSE);
+                                                    }
+                                                }
+                                                return true;
+                                            } else {
+                                                try {
+                                                    String addr = ConnectConfig.getServerAddress(getContext());
+                                                    String key = ConnectConfig.getAccessKey(getContext());
+                                                    int port = ConnectConfig.getServerPort(getContext());
+
+                                                    ManagedChannel channel = ManagedChannelBuilder
+                                                            .forAddress(addr, port)
+                                                            .usePlaintext(true)
+                                                            .build();
+                                                    BlackJackGrpc.BlackJackBlockingStub stub = BlackJackGrpc.newBlockingStub(channel);
+
+                                                    BlackJackOuterClass.GetGameResultRequest.Builder builder = BlackJackOuterClass.GetGameResultRequest.newBuilder()
+                                                            .setAccessToken(key)
+                                                            .setGameRoomId(gameRoomId);
+
+                                                    BlackJackOuterClass.GetGameResultReply reply = stub.getGameResult(builder.build());
+
+                                                    if (!reply.getIsSucceed()) return false;
+
+                                                    for (BlackJackOuterClass.PlayerResult playerResult : reply.getPlayerResultsList()) {
+                                                        for (BlackJackPlayer player : players) {
+                                                            if(player.getUserId() != playerResult.getUserId()) continue;
+
+                                                            switch (playerResult.getGameResult()){
+                                                                case LOSE:
+                                                                    player.setGameResult(BlackJackPlayer.GameResult.LOSE);
+                                                                    break;
+                                                                case TIE:
+                                                                    player.setGameResult(BlackJackPlayer.GameResult.TIE);
+                                                                    break;
+                                                                case WIN:
+                                                                    player.setGameResult(BlackJackPlayer.GameResult.WIN);
+                                                                    break;
+                                                                case UNRECOGNIZED:
+                                                                    break;
+                                                            }
+                                                            player.setGotPoints(playerResult.getGotPoints());
+                                                            break;
+                                                        }
+                                                    }
+
+                                                    return true;
+
+
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                    return false;
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        protected void onPostExecute(Boolean result) {
+                                            dialog.dismiss();
+                                            if (result) {
+                                                adapter.setGameStatus(BlackJackSectionAdapter.BlackJackGameStatus.RESULT);
+                                                adapter.notifyDataSetChanged();
+                                            } else {
+                                                new AlertDialog.Builder(getContext())
+                                                        .setTitle("通信に失敗しました")
+                                                        .setMessage("結果の取得に失敗しました。再試行するか、管理者に問い合わせてください")
+                                                        .setPositiveButton("OK", null)
+                                                        .show();
+                                            }
+                                        }
+
+                                    }.execute();
+
+
+                                }else{
+                                    adapter.notifyDataSetChanged();
                                 }
-                                adapter.notifyDataSetChanged();
                             } else {
                                 new AlertDialog.Builder(getContext())
                                         .setTitle("通信に失敗しました")

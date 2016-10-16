@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,8 @@ import android.widget.TextView;
 import net.gurigoro.kaiji.Trump;
 import net.gurigoro.kaiji.blackjack.BlackJackGrpc;
 import net.gurigoro.kaiji.blackjack.BlackJackOuterClass;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -588,6 +592,27 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                 break;
             }
             case RESULT: {
+                if(player.getUserId() == BlackJackPlayer.DEALER_ID) break;
+                View innerView = inflater.inflate(R.layout.game_result_layout, null);
+                innerLayout.addView(innerView);
+                TextView messageTextView = (TextView) innerView.findViewById(R.id.game_result_message_textview);
+                TextView pointTextView = (TextView) innerView.findViewById(R.id.game_result_point_textview);
+                switch (player.getGameResult()){
+                    case WIN:
+                        messageTextView.setText("勝ち");
+                        pointTextView.setTextColor(Color.RED);
+                        break;
+                    case LOSE:
+                        messageTextView.setText("負け");
+                        pointTextView.setTextColor(Color.BLUE);
+                        break;
+                    case TIE:
+                        messageTextView.setText("引き分け");
+                        break;
+                }
+                pointTextView.setText(String.format("%+dPt.", player.getGotPoints()));
+                playerSubValueTextView.setText((player.getUserPoint() + player.getGotPoints()) + "Pt.");
+
                 break;
             }
         }

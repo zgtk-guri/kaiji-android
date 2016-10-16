@@ -40,6 +40,31 @@ public class BlackJackPlayer {
     private boolean canSplit = false;
     private boolean canDoubleDown = false;
 
+    public enum GameResult{
+        WIN,
+        LOSE,
+        TIE
+    }
+
+    private GameResult gameResult;
+    private long gotPoints = 0;
+
+    public long getGotPoints() {
+        return gotPoints;
+    }
+
+    public void setGotPoints(long gotPoints) {
+        this.gotPoints = gotPoints;
+    }
+
+    public GameResult getGameResult() {
+        return gameResult;
+    }
+
+    public void setGameResult(GameResult gameResult) {
+        this.gameResult = gameResult;
+    }
+
     public boolean isCanStandSecondHands() {
         return canStandSecondHands;
     }
