@@ -468,7 +468,8 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                 boolean allEndActions = true;
                 for (BlackJackPlayer blackJackPlayer : players) {
                     if(blackJackPlayer.getUserId() == BlackJackPlayer.DEALER_ID) continue;
-                    if(!blackJackPlayer.isEndActions()) allEndActions = false;
+                    if(blackJackPlayer.isCanStand()) allEndActions = false;
+                    if(blackJackPlayer.isSplit() && blackJackPlayer.isCanStandSecondHands()) allEndActions = false;
                 }
                 if(allEndActions){
                     gameStatus = BlackJackGameStatus.DEALER_HIT;
