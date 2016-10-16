@@ -453,6 +453,12 @@ public class BlackjackFragment extends Fragment {
 
                                                     BlackJackOuterClass.GetGameResultReply reply = stub.getGameResult(builder.build());
 
+                                                    stub.destroyGameRoom(
+                                                            BlackJackOuterClass.DestroyGameRoomRequest.newBuilder()
+                                                                    .setAccessToken(key)
+                                                                    .setGameRoomId(gameRoomId)
+                                                                    .build());
+
                                                     if (!reply.getIsSucceed()) return false;
 
                                                     for (BlackJackOuterClass.PlayerResult playerResult : reply.getPlayerResultsList()) {
