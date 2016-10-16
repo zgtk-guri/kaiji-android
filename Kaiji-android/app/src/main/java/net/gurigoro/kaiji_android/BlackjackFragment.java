@@ -46,6 +46,7 @@ public class BlackjackFragment extends Fragment {
     private static final int SCAN_QR_REQ_CODE = 447;
     private static final int CARD_INPUT_FIRST_DEAL_REQ_CODE = 759;
     private static final int CARD_INPUT_HIT_REQ_CODE = 179;
+    private static final int CARD_INPUT_DOUBLE_DOWN_REQ_CODE = 826;
 
     @Override
     public void onActivityResult(final int requestCode, int resultCode, Intent data) {
@@ -287,6 +288,93 @@ public class BlackjackFragment extends Fragment {
                             new AlertDialog.Builder(getContext())
                                     .setTitle("通信に失敗しました")
                                     .setMessage("ヒットに失敗しました。再試行するか、管理者に問い合わせてください")
+                                    .setPositiveButton("OK", null)
+                                    .show();
+                        }
+                    }
+
+                }.execute();
+            }
+        }else if(requestCode == CARD_INPUT_DOUBLE_DOWN_REQ_CODE){
+            if(resultCode == RESULT_OK){
+                final TrumpCard card = (TrumpCard) data.getSerializableExtra(CardInputActivity.CARD_KEY);
+                Bundle bundle = data.getBundleExtra(CardInputActivity.DATA_BUNDLE_KEY);
+                final int position = bundle.getInt("position");
+                final long gameRoomId = adapter.getGameRoomId();
+
+                final ProgressDialog dialog = new ProgressDialog(getContext());
+                dialog.setTitle("通信中");
+                dialog.setMessage("ダブルダウンしています");
+                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                dialog.setCancelable(false);
+                dialog.show();
+
+                new AsyncTask<Void, Void, Boolean>(){
+
+                    @Override
+                    protected Boolean doInBackground(Void... params) {
+                        if(ConnectConfig.OFFLINE) {
+                            BlackJackPlayer player = players.get(position);
+                            player.getCards()[0].add(card);
+                            player.getCardPoint()[0] += card.getNumber();
+                            if(player.getCardPoint()[0] > 21){
+                                player.setBust(true);
+                            }
+                            player.setCanHit(false);
+                            player.setCanStand(false);
+                            player.setCanDoubleDown(false);
+                            player.setCanSplit(false);
+                            return true;
+                        }else{
+                            try {
+                                String addr = ConnectConfig.getServerAddress(getContext());
+                                String key = ConnectConfig.getAccessKey(getContext());
+                                int port = ConnectConfig.getServerPort(getContext());
+
+                                ManagedChannel channel = ManagedChannelBuilder
+                                        .forAddress(addr, port)
+                                        .usePlaintext(true)
+                                        .build();
+                                BlackJackGrpc.BlackJackBlockingStub stub = BlackJackGrpc.newBlockingStub(channel);
+
+                                BlackJackOuterClass.DoubleDownRequest.Builder builder = BlackJackOuterClass.DoubleDownRequest.newBuilder()
+                                        .setAccessToken(key)
+                                        .setGameRoomId(gameRoomId)
+                                        .setUserId(players.get(position).getUserId())
+                                        .setCard(card.getGrpcTrumpCard());
+
+                                BlackJackOuterClass.DoubleDownReply reply = stub.doubleDown(builder.build());
+
+                                if(!reply.getIsSucceed()) return false;
+
+                                BlackJackPlayer player = players.get(position);
+                                player.getCardPoint()[0] = reply.getCardPoints();
+                                player.getCards()[0].add(card);
+                                player.setCanHit(false);
+                                player.setCanStand(false);
+                                player.setCanDoubleDown(false);
+                                player.setCanSplit(false);
+
+
+                                return true;
+
+
+                            }catch (Exception e){
+                                e.printStackTrace();
+                                return false;
+                            }
+                        }
+                    }
+
+                    @Override
+                    protected void onPostExecute(Boolean result) {
+                        dialog.dismiss();
+                        if(result){
+                            adapter.notifyDataSetChanged();
+                        }else{
+                            new AlertDialog.Builder(getContext())
+                                    .setTitle("通信に失敗しました")
+                                    .setMessage("ダブルダウンに失敗しました。再試行するか、管理者に問い合わせてください")
                                     .setPositiveButton("OK", null)
                                     .show();
                         }
@@ -573,6 +661,12 @@ public class BlackjackFragment extends Fragment {
                         }
 
                     }.execute();
+                }else if(view.getId() == R.id.bj_action_double_down_button){
+                    Bundle bundle  = new Bundle();
+                    bundle.putInt("position", position);
+                    Intent intent = new Intent(getContext(), CardInputActivity.class);
+                    intent.putExtra(CardInputActivity.DATA_BUNDLE_KEY, bundle);
+                    startActivityForResult(intent, CARD_INPUT_DOUBLE_DOWN_REQ_CODE);
                 }
             }
         });
