@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
@@ -41,6 +42,8 @@ public class CardInputActivity extends AppCompatActivity implements RadioGroup.O
         radioGroup = (RadioGroup) findViewById(R.id.card_select_radio_group);
         okButton = (Button) findViewById(R.id.card_select_ok_button);
         cancelButton = (Button) findViewById(R.id.card_select_cancel_button);
+
+        numberPicker.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
         Intent requestIntent = getIntent();
         if(requestIntent.hasExtra(DATA_BUNDLE_KEY)){
