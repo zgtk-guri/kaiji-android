@@ -108,4 +108,24 @@ public class TrumpCard implements Serializable {
         }
 
     }
+
+    public Trump.TrumpCard getGrpcTrumpCard(){
+        Trump.TrumpCard.Builder builder = Trump.TrumpCard.newBuilder();
+        builder.setNumber(number);
+        switch (suit){
+            case SPADE:
+                builder.setSuit(Trump.CardSuit.SPADE);
+                break;
+            case CLUB:
+                builder.setSuit(Trump.CardSuit.CLUB);
+                break;
+            case HEART:
+                builder.setSuit(Trump.CardSuit.HEART);
+                break;
+            case DIAMOND:
+                builder.setSuit(Trump.CardSuit.DIAMOND);
+                break;
+        }
+        return builder.build();
+    }
 }
