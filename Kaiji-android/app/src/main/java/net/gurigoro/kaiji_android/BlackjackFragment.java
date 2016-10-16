@@ -313,7 +313,7 @@ public class BlackjackFragment extends Fragment {
                                 BlackJackPlayer dealer = players.get(position);
                                 dealer.getCards()[0].add(card);
                                 if(dealer.getCardPoint()[0] == 0){
-                                    dealer.getCardPoint()[0] = dealer.getCards()[0].get(0).getNumber();xxxx
+                                    dealer.getCardPoint()[0] = dealer.getCards()[0].get(0).getNumber();
                                 }
                                 dealer.getCardPoint()[0] += card.getNumber();
                                 if (dealer.getCardPoint()[0] > 21) {
