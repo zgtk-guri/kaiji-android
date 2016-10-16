@@ -406,7 +406,7 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                             dialog.dismiss();
                             setCommunicating(false);
                             if(result){
-                                notifyDataSetChanged();
+                                notifyDataSetInvalidated();
                             }else{
                                 new AlertDialog.Builder(context)
                                         .setTitle("通信に失敗しました")
