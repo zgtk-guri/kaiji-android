@@ -37,7 +37,7 @@ public class BlackjackFragment extends Fragment {
 
     public static final String TAG = "blackjack_fragment";
 
-    private Button startButton, entryButton;
+    private Button startButton, entryButton, endButton;
     private ListView mainListView;
 
     private List<BlackJackPlayer> players;
@@ -638,6 +638,7 @@ public class BlackjackFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_blackjack, container, false);
         entryButton = (Button) view.findViewById(R.id.blackjack_entry_button);
         startButton = (Button) view.findViewById(R.id.blackjack_start_button);
+        endButton = (Button) view.findViewById(R.id.blackjack_end_button);
         mainListView = (ListView) view.findViewById(R.id.blackjack_main_listview);
 
         adapter = new BlackJackSectionAdapter(getContext());
@@ -728,6 +729,20 @@ public class BlackjackFragment extends Fragment {
                     }
 
                 }.execute();
+            }
+        });
+
+        endButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initializePlayers();
+                mainListView.setAdapter(null);
+                adapter = new BlackJackSectionAdapter(getContext());
+                adapter.setPlayers(players);
+                mainListView.setAdapter(adapter);
+                entryButton.setVisibility(View.VISIBLE);
+                startButton.setVisibility(View.VISIBLE);
+                endButton.setVisibility(View.GONE);
             }
         });
 

@@ -24,6 +24,14 @@
             android:layout_height="wrap_content">
 
             <Button
+                android:text="終了"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/blackjack_end_button"
+                android:visibility="gone"
+                android:layout_weight="1" />
+
+            <Button
                 android:text="エントリー"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
