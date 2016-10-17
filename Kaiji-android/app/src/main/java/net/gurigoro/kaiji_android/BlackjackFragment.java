@@ -749,7 +749,11 @@ public class BlackjackFragment extends Fragment {
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                if(view.getId() == R.id.bj_first_deal_card_1 || view.getId() == R.id.bj_first_deal_card_2){
+                if(view == null){
+                    //End
+                    endButton.setVisibility(View.VISIBLE);
+
+                }else if(view.getId() == R.id.bj_first_deal_card_1 || view.getId() == R.id.bj_first_deal_card_2){
                     // Set First Dealed Card
                     Bundle bundle = new Bundle();
                     bundle.putInt("position", position);

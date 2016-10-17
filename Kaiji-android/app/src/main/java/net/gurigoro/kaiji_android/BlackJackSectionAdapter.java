@@ -613,6 +613,8 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                 pointTextView.setText(String.format("%+dPt.", player.getGotPoints()));
                 playerSubValueTextView.setText((player.getUserPoint() + player.getGotPoints()) + "Pt.");
 
+                ((ListView)parent).performItemClick(null, 0, 0);
+
                 break;
             }
         }
