@@ -7,7 +7,7 @@ import java.util.List;
  * Created by takahito on 2016/10/14.
  */
 
-public class BlackJackPlayer {
+public class BlackJackPlayer extends GamePlayer{
     public BlackJackPlayer() {
         cards = new List[2];
         cards[0] = new ArrayList<>();
@@ -17,15 +17,10 @@ public class BlackJackPlayer {
 
     // if userId is -1, it's a dealer.
     public static final int DEALER_ID = -1;
-    private int userId;
-    private String userName;
-    private long userPoint;
-    private long betPoint;
 
     private List<TrumpCard> cards[];
     private long cardPoint[];
 
-    private boolean isCommunicating = false;
 
     private boolean isBetted = false;
     private boolean isFirstDealed = false;
@@ -40,30 +35,8 @@ public class BlackJackPlayer {
     private boolean canSplit = false;
     private boolean canDoubleDown = false;
 
-    public enum GameResult{
-        WIN,
-        LOSE,
-        TIE
-    }
 
-    private GameResult gameResult;
-    private long gotPoints = 0;
 
-    public long getGotPoints() {
-        return gotPoints;
-    }
-
-    public void setGotPoints(long gotPoints) {
-        this.gotPoints = gotPoints;
-    }
-
-    public GameResult getGameResult() {
-        return gameResult;
-    }
-
-    public void setGameResult(GameResult gameResult) {
-        this.gameResult = gameResult;
-    }
 
     public boolean isCanStandSecondHands() {
         return canStandSecondHands;
@@ -89,14 +62,6 @@ public class BlackJackPlayer {
         this.canHitSecondHands = canHitSecondHands;
     }
 
-    public boolean isCommunicating() {
-        return isCommunicating;
-    }
-
-    public void setCommunicating(boolean communicating) {
-        isCommunicating = communicating;
-    }
-
     public boolean isFirstDealed() {
         return isFirstDealed;
     }
@@ -113,37 +78,6 @@ public class BlackJackPlayer {
         isBetted = betted;
     }
 
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public long getUserPoint() {
-        return userPoint;
-    }
-
-    public void setUserPoint(long userPoint) {
-        this.userPoint = userPoint;
-    }
-
-    public long getBetPoint() {
-        return betPoint;
-    }
-
-    public void setBetPoint(long betPoint) {
-        this.betPoint = betPoint;
-    }
 
     public List<TrumpCard>[] getCards() {
         return cards;
