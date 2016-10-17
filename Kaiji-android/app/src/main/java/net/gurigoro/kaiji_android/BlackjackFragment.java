@@ -622,6 +622,14 @@ public class BlackjackFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    private void initializePlayers(){
+        players = new ArrayList<>();
+        BlackJackPlayer dealer = new BlackJackPlayer();
+        dealer.setUserId(BlackJackPlayer.DEALER_ID);
+        dealer.setUserName("ディーラー");
+        players.add(dealer);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -633,11 +641,7 @@ public class BlackjackFragment extends Fragment {
         mainListView = (ListView) view.findViewById(R.id.blackjack_main_listview);
 
         adapter = new BlackJackSectionAdapter(getContext());
-        players = new ArrayList<>();
-        BlackJackPlayer dealer = new BlackJackPlayer();
-        dealer.setUserId(BlackJackPlayer.DEALER_ID);
-        dealer.setUserName("ディーラー");
-        players.add(dealer);
+        initializePlayers();
         adapter.setPlayers(players);
         mainListView.setAdapter(adapter);
 
