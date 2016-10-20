@@ -155,7 +155,23 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                 bettingButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final int betPoint = Integer.parseInt(bettingPointField.getText().toString()) * 100;
+                        long tmp = 0;
+
+                        try {
+                            tmp = Long.parseLong(bettingPointField.getText().toString()) * 100;
+                        }catch (Exception e){
+                            if(e instanceof NumberFormatException){
+                                new AlertDialog.Builder(context)
+                                        .setMessage("ベット額を正しく入力してください。")
+                                        .setPositiveButton("OK", null)
+                                        .show();
+                            }else{
+                                e.printStackTrace();
+                            }
+                            return;
+                        }
+
+                        final long betPoint = tmp;
 
                         if(player.isCommunicating()){
                             return;
