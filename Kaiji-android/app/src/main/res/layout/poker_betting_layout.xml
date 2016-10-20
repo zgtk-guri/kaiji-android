@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:text="コール"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/poker_call_button"
+        android:layout_weight="1" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="0"
+        android:id="@+id/poker_bet_point_edittext"
+        android:layout_weight="1"
+        android:text="1" />
+
+    <TextView
+        android:text="00Pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2"
+        android:layout_weight="1"
+        android:textAppearance="@android:style/TextAppearance.Material.Small"
+        android:ems="1" />
+
+    <Button
+        android:text="レイズ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/poker_raise_button"
+        android:layout_weight="1" />
+
+    <Button
+        android:text="フォールド"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/poker_fold_button"
+        android:layout_weight="1" />
+
+</LinearLayout>
