@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity
         boolean isNeedDialog = false;
         if(currentSelectedMenuItemId == R.id.nav_poker
                 || currentSelectedMenuItemId == R.id.nav_blackjack
-                || currentSelectedMenuItemId == R.id.nav_poker){
+                || currentSelectedMenuItemId == R.id.nav_baccarat){
             isNeedDialog =  true;
         }
         if(!isNeedDialog) {
