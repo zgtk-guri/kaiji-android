@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import net.gurigoro.kaiji.KaijiGrpc;
 import net.gurigoro.kaiji.KaijiOuterClass;
+import net.gurigoro.kaiji.Trump;
 import net.gurigoro.kaiji.poker.PokerGrpc;
 import net.gurigoro.kaiji.poker.PokerOuterClass;
 
@@ -31,8 +32,6 @@ import io.grpc.ManagedChannelBuilder;
  * A simple {@link Fragment} subclass.
  */
 public class PokerFragment extends Fragment {
-
-
     public static final String TAG = "poker_fragment";
 
     private Button startButton, entryButton, endButton;
@@ -42,6 +41,7 @@ public class PokerFragment extends Fragment {
     private PokerSectionAdapter adapter;
 
     private static final int SCAN_QR_REQ_CODE = 37;
+    public static final int CARD_INPUT_REQ_CODE = 960;
 
     private void initializePlayers(){
         players = new ArrayList<>();
@@ -138,6 +138,14 @@ public class PokerFragment extends Fragment {
                     }
 
                 }.execute();
+            }
+        }else if(requestCode == CARD_INPUT_REQ_CODE){
+            if(resultCode == Activity.RESULT_OK){
+                TrumpCard card = (TrumpCard) data.getSerializableExtra(CardInputActivity.CARD_KEY);
+                Bundle bundle = data.getBundleExtra(CardInputActivity.DATA_BUNDLE_KEY);
+                int position = bundle.getInt("position");
+                players.get(position).getCards().add(card);
+                adapter.notifyDataSetChanged();
             }
         }
     }
@@ -268,6 +276,12 @@ public class PokerFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(view == null){
                     endButton.setVisibility(View.VISIBLE);
+                }else if(id == PokerSectionAdapter.CARD_INPUT_BUTTPN_ID){
+                    Intent intent = new Intent(getContext(), CardInputActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("position", position);
+                    intent.putExtra(CardInputActivity.DATA_BUNDLE_KEY, bundle);
+                    startActivityForResult(intent, CARD_INPUT_REQ_CODE);
                 }
             }
         });

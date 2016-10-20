@@ -13,7 +13,7 @@ public class PokerPlayer extends GamePlayer{
     }
 
     private List<TrumpCard> cards;
-    private PokerHand hand;
+    private PokerHand hand = PokerHand.UNKNOWN;
 
     private boolean isCalled = false;
     private boolean isFolded = false;
