@@ -33,11 +33,11 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.setCheckedItem(R.id.nav_stat);
-        currentSelectedMenuItemId = R.id.nav_stat;
+        navigationView.setCheckedItem(R.id.nav_add_user);
+        currentSelectedMenuItemId = R.id.nav_add_user;
 
         getFragmentManager().beginTransaction()
-                .replace(R.id.main_container, new StatFragment(), StatFragment.TAG)
+                .replace(R.id.main_container, new AddUserFragment(), StatFragment.TAG)
                 .commit();
 
         if(ConnectConfig.OFFLINE){

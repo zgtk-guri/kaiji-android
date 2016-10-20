@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item
+        <!-- 封印 -->
+        <!--item
             android:id="@+id/nav_stat"
             android:icon="@drawable/ic_menu_stats"
             android:title="統計"
-            android:checked="true"/>
-        <!-- 封印 -->
+            android:checked="true"/-->
         <!--item
             android:id="@+id/nav_chat"
             android:icon="@drawable/ic_menu_chat"
