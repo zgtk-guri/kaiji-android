@@ -71,14 +71,14 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
                 break;
             }
-            case R.id.nav_stat: {
+            // 封印
+            /*case R.id.nav_stat: {
                 StatFragment fragment = new StatFragment();
                 getFragmentManager().beginTransaction()
                         .replace(R.id.main_container, fragment, StatFragment.TAG)
                         .commit();
                 break;
-            }
-            // 封印
+            }*/
             /* case R.id.nav_chat: {
                 ChatFragment fragment = new ChatFragment();
                 getFragmentManager().beginTransaction()
