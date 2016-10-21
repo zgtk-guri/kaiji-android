@@ -75,8 +75,27 @@ public class AddUserFragment extends Fragment {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final long id = Long.parseLong(idEditText.getText().toString());
+                long tmpId;
+                try {
+                  tmpId = Long.parseLong(idEditText.getText().toString());
+                } catch (NumberFormatException e) {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("ID")
+                            .setMessage("IDが間違っています。")
+                            .setPositiveButton("OK", null)
+                            .show();
+                    return;
+                }
+                final long id = tmpId;
                 final String name = nameEditText.getText().toString();
+                if (name.equals("")) {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("名前")
+                            .setMessage("名前が空になっています。")
+                            .setPositiveButton("OK", null)
+                            .show();
+                    return;
+                }
                 final boolean isAnonymous = anonymousCheckBox.isChecked();
 
                 final ProgressDialog dialog = new ProgressDialog(getContext());
