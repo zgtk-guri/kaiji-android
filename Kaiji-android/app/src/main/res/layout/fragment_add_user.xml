@@ -5,9 +5,60 @@
     tools:context="net.gurigoro.kaiji_android.AddUserFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:ems="10"
+            android:id="@+id/add_user_id_edittext"
+            android:hint="ID"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:layout_columnWeight="1" />
+
+        <Button
+            android:text="QRスキャン"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_user_scan_button"
+            android:layout_column="1"
+            android:layout_row="0" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/add_user_name_edittext"
+            android:layout_column="0"
+            android:layout_columnSpan="2"
+            android:layout_row="1"
+            android:layout_columnWeight="1"
+            android:hint="名前" />
+
+        <CheckBox
+            android:text="匿名希望 (ランキングに名前を載せません)"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_user_anonymous_checkbox"
+            android:layout_row="2"
+            android:layout_column="0"
+            android:layout_columnSpan="2"
+            android:layout_columnWeight="1" />
+
+        <Button
+            android:text="追加"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_user_add_button"
+            android:layout_column="0"
+            android:layout_columnSpan="2"
+            android:layout_row="4"
+            android:layout_columnWeight="1" />
+    </GridLayout>
 </FrameLayout>

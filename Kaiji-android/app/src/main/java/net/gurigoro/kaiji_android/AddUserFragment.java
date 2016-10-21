@@ -1,55 +1,54 @@
 package net.gurigoro.kaiji_android;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import net.gurigoro.kaiji.KaijiGrpc;
+import net.gurigoro.kaiji.KaijiOuterClass;
+
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+
+import static android.app.Activity.RESULT_OK;
 
 
 public class AddUserFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+   public static final String TAG = "add_user_fragment";
 
-    public static final String TAG = "add_user_fragment";
+    private EditText idEditText;
+    private Button scanButton;
+    private EditText nameEditText;
+    private CheckBox anonymousCheckBox;
+    private Button addButton;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final int SCAN_QR_REQ_CODE = 768;
 
-    public AddUserFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AddUserFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AddUserFragment newInstance(String param1, String param2) {
-        AddUserFragment fragment = new AddUserFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == SCAN_QR_REQ_CODE){
+            if(resultCode == RESULT_OK){
+                String idstr = data.getStringExtra(ScanQrActivity.QR_VALUE_KEY);
+                idEditText.setText(idstr);
+            }
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -57,7 +56,94 @@ public class AddUserFragment extends Fragment {
                              Bundle savedInstanceState) {
         getActivity().setTitle("ユーザー新規登録");
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_user, container, false);
+        View view = inflater.inflate(R.layout.fragment_add_user, container, false);
+
+        idEditText = (EditText) view.findViewById(R.id.add_user_id_edittext);
+        nameEditText = (EditText) view.findViewById(R.id.add_user_name_edittext);
+        scanButton = (Button) view.findViewById(R.id.add_user_scan_button);
+        anonymousCheckBox = (CheckBox) view.findViewById(R.id.add_user_anonymous_checkbox);
+        addButton = (Button) view.findViewById(R.id.add_user_add_button);
+
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ScanQrActivity.class);
+                startActivityForResult(intent, SCAN_QR_REQ_CODE);
+            }
+        });
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final long id = Long.parseLong(idEditText.getText().toString());
+                final String name = nameEditText.getText().toString();
+                final boolean isAnonymous = anonymousCheckBox.isChecked();
+
+                final ProgressDialog dialog = new ProgressDialog(getContext());
+                dialog.setTitle("通信中");
+                dialog.setMessage("ユーザ追加中。");
+                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                dialog.setCancelable(false);
+                dialog.show();
+
+                new AsyncTask<Void, Void, Boolean>(){
+
+                    @Override
+                    protected Boolean doInBackground(Void... params) {
+                        if(ConnectConfig.OFFLINE) {
+                            return true;
+                        }else{
+                            try {
+                                String addr = ConnectConfig.getServerAddress(getContext());
+                                String key = ConnectConfig.getAccessKey(getContext());
+                                int port = ConnectConfig.getServerPort(getContext());
+
+                                ManagedChannel channel = ManagedChannelBuilder
+                                        .forAddress(addr, port)
+                                        .usePlaintext(true)
+                                        .build();
+                                KaijiGrpc.KaijiBlockingStub stub = KaijiGrpc.newBlockingStub(channel);
+
+                                KaijiOuterClass.AddUserRequest.Builder builder = KaijiOuterClass.AddUserRequest.newBuilder()
+                                        .setAccessToken(key)
+                                        .setUserId(id)
+                                        .setName(name)
+                                        .setIsAnonymous(isAnonymous)
+                                        .setIsAvailable(true);
+
+                                KaijiOuterClass.AddUserReply reply = stub.addUser(builder.build());
+
+                                return reply.getIsSucceed();
+
+                            }catch (Exception e){
+                                e.printStackTrace();
+                                return false;
+                            }
+                        }
+                    }
+
+                    @Override
+                    protected void onPostExecute(Boolean result) {
+                        dialog.dismiss();
+                        if(result){
+                            Toast.makeText(getContext(), "ユーザー登録成功しました！", Toast.LENGTH_SHORT).show();
+                            idEditText.setText("");
+                            nameEditText.setText("");
+                            anonymousCheckBox.setChecked(false);
+                        }else{
+                            new AlertDialog.Builder(getContext())
+                                    .setTitle("エラー")
+                                    .setMessage("ユーザー登録に失敗しました。")
+                                    .setPositiveButton("OK", null)
+                                    .show();
+                        }
+                    }
+
+                }.execute();
+            }
+        });
+
+        return view;
     }
 
 }
