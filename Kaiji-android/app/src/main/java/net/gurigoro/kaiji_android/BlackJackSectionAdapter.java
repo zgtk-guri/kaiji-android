@@ -291,8 +291,6 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                     if(!blackJackPlayer.isFirstDealed()) allCardSet = false;
                 }
                 if(allCardSet){
-                    gameStatus = BlackJackGameStatus.ACTIONS;
-                    notifyDataSetChanged();
 
                     if(isCommunicating()){
                         break;
@@ -426,6 +424,7 @@ public class BlackJackSectionAdapter extends BaseAdapter {
                             dialog.dismiss();
                             setCommunicating(false);
                             if(result){
+                                gameStatus = BlackJackGameStatus.ACTIONS;
                                 notifyDataSetInvalidated();
                             }else{
                                 new AlertDialog.Builder(context)
