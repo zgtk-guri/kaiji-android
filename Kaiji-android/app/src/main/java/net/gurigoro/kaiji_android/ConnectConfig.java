@@ -16,8 +16,8 @@ public class ConnectConfig {
     }
 
     public static int getServerPort(Context context){
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getInt(context.getString(R.string.pref_key_server_port), 1257);
+        return Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(context.getString(R.string.pref_key_server_port), "1257"));
     }
 
     public static String getAccessKey(Context context){
