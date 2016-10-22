@@ -501,199 +501,209 @@ public class PokerSectionAdapter extends BaseAdapter {
                     if(pokerPlayer.getHand() == PokerPlayer.PokerHand.UNKNOWN) isAllEnd = false;
                 }
                 if(isAllEnd){
-                    final ProgressDialog dialog = new ProgressDialog(context);
-                    dialog.setTitle("通信中");
-                    dialog.setMessage("結果を取得しています。");
-                    dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                    dialog.setCancelable(false);
-                    dialog.show();
+                    if(!isCommunicating) {
+                        player.setCommunicating(true);
 
-                    new AsyncTask<Void, Void, Boolean>(){
+                        final ProgressDialog dialog = new ProgressDialog(context);
+                        dialog.setTitle("通信中");
+                        dialog.setMessage("結果を取得しています。");
+                        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        dialog.setCancelable(false);
+                        dialog.show();
 
-                        @Override
-                        protected Boolean doInBackground(Void... params) {
-                            if(ConnectConfig.OFFLINE) {
-                                Random random = new Random();
-                                player.setGotPoints(random.nextInt());
-                                if(random.nextBoolean()){
-                                    player.setGameResult(GamePlayer.GameResult.WIN);
-                                }else{
-                                    player.setGameResult(GamePlayer.GameResult.LOSE);
-                                }
-                                return true;
-                            }else{
-                                try {
-                                    String addr = ConnectConfig.getServerAddress(context);
-                                    String key = ConnectConfig.getAccessKey(context);
-                                    int port = ConnectConfig.getServerPort(context);
+                        new AsyncTask<Void, Void, Boolean>() {
 
-                                    ManagedChannel channel = ManagedChannelBuilder
-                                            .forAddress(addr, port)
-                                            .usePlaintext(true)
-                                            .build();
-                                    PokerGrpc.PokerBlockingStub stub = PokerGrpc.newBlockingStub(channel);
-
-                                    PokerOuterClass.GetGameResultRequest.Builder builder = PokerOuterClass.GetGameResultRequest.newBuilder()
-                                            .setAccessToken(key)
-                                            .setGameRoomId(gameRoomId);
-
-                                    PokerOuterClass.GetGameResultReply reply
-                                            = stub.getGameResult(builder.build());
-
-                                    if(!reply.getIsSucceed()) return false;
-
-                                    for (PokerOuterClass.PlayerResult result : reply.getPlayerResultsList()) {
-                                        for (PokerPlayer pokerPlayer : players) {
-                                            if(result.getUserId() != pokerPlayer.getUserId()) continue;
-                                            switch (result.getGameResult()){
-                                                case LOSE:
-                                                    pokerPlayer.setGameResult(GamePlayer.GameResult.LOSE);
-                                                    break;
-                                                case TIE:
-                                                    pokerPlayer.setGameResult(GamePlayer.GameResult.TIE);
-                                                    break;
-                                                case WIN:
-                                                    pokerPlayer.setGameResult(GamePlayer.GameResult.WIN);
-                                                    break;
-                                                case UNRECOGNIZED:
-                                                    break;
-                                            }
-                                            pokerPlayer.setGotPoints(result.getGotPoints());
-                                        }
+                            @Override
+                            protected Boolean doInBackground(Void... params) {
+                                if (ConnectConfig.OFFLINE) {
+                                    Random random = new Random();
+                                    player.setGotPoints(random.nextInt());
+                                    if (random.nextBoolean()) {
+                                        player.setGameResult(GamePlayer.GameResult.WIN);
+                                    } else {
+                                        player.setGameResult(GamePlayer.GameResult.LOSE);
                                     }
-
                                     return true;
-                                }catch (Exception e){
-                                    e.printStackTrace();
-                                    return false;
+                                } else {
+                                    try {
+                                        String addr = ConnectConfig.getServerAddress(context);
+                                        String key = ConnectConfig.getAccessKey(context);
+                                        int port = ConnectConfig.getServerPort(context);
+
+                                        ManagedChannel channel = ManagedChannelBuilder
+                                                .forAddress(addr, port)
+                                                .usePlaintext(true)
+                                                .build();
+                                        PokerGrpc.PokerBlockingStub stub = PokerGrpc.newBlockingStub(channel);
+
+                                        PokerOuterClass.GetGameResultRequest.Builder builder = PokerOuterClass.GetGameResultRequest.newBuilder()
+                                                .setAccessToken(key)
+                                                .setGameRoomId(gameRoomId);
+
+                                        PokerOuterClass.GetGameResultReply reply
+                                                = stub.getGameResult(builder.build());
+
+                                        if (!reply.getIsSucceed()) return false;
+
+                                        for (PokerOuterClass.PlayerResult result : reply.getPlayerResultsList()) {
+                                            for (PokerPlayer pokerPlayer : players) {
+                                                if (result.getUserId() != pokerPlayer.getUserId())
+                                                    continue;
+                                                switch (result.getGameResult()) {
+                                                    case LOSE:
+                                                        pokerPlayer.setGameResult(GamePlayer.GameResult.LOSE);
+                                                        break;
+                                                    case TIE:
+                                                        pokerPlayer.setGameResult(GamePlayer.GameResult.TIE);
+                                                        break;
+                                                    case WIN:
+                                                        pokerPlayer.setGameResult(GamePlayer.GameResult.WIN);
+                                                        break;
+                                                    case UNRECOGNIZED:
+                                                        break;
+                                                }
+                                                pokerPlayer.setGotPoints(result.getGotPoints());
+                                            }
+                                        }
+
+                                        return true;
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        return false;
+                                    }
                                 }
                             }
-                        }
 
-                        @Override
-                        protected void onPostExecute(Boolean result) {
-                            dialog.dismiss();
-                            if(result) {
-                                gameStatus = PokerGameStatus.RESULT;
-                            }else{
-                                new AlertDialog.Builder(context)
-                                        .setTitle("通信に失敗しました")
-                                        .setMessage("管理者に問い合わせてください")
-                                        .setPositiveButton("OK", null)
-                                        .show();
+                            @Override
+                            protected void onPostExecute(Boolean result) {
+                                dialog.dismiss();
+                                if (result) {
+                                    gameStatus = PokerGameStatus.RESULT;
+                                } else {
+                                    new AlertDialog.Builder(context)
+                                            .setTitle("通信に失敗しました")
+                                            .setMessage("管理者に問い合わせてください")
+                                            .setPositiveButton("OK", null)
+                                            .show();
+                                }
+                                setCommunicating(false);
+                                notifyDataSetChanged();
                             }
-                            notifyDataSetChanged();
-                        }
 
-                    }.execute();
+                        }.execute();
+                    }
                 }
 
                 boolean isImputtedFiveCards
                         = player.getHand() == PokerPlayer.PokerHand.UNKNOWN
                         && player.getCards().size() == 5;
                 if(isImputtedFiveCards){
-                    final ProgressDialog dialog = new ProgressDialog(context);
-                    dialog.setTitle("通信中");
-                    dialog.setMessage("ハンドを取得しています。");
-                    dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                    dialog.setCancelable(false);
-                    dialog.show();
+                    if(!player.isCommunicating()) {
+                        player.setCommunicating(true);
+                        final ProgressDialog dialog = new ProgressDialog(context);
+                        dialog.setTitle("通信中");
+                        dialog.setMessage("ハンドを取得しています。");
+                        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        dialog.setCancelable(false);
+                        dialog.show();
 
-                    new AsyncTask<Void, Void, Boolean>(){
+                        new AsyncTask<Void, Void, Boolean>() {
 
-                        @Override
-                        protected Boolean doInBackground(Void... params) {
-                            if(ConnectConfig.OFFLINE) {
-                                player.setHand(PokerPlayer.PokerHand.HIGH_CARDS);
-                                return true;
-                            }else{
-                                try {
-                                    String addr = ConnectConfig.getServerAddress(context);
-                                    String key = ConnectConfig.getAccessKey(context);
-                                    int port = ConnectConfig.getServerPort(context);
+                            @Override
+                            protected Boolean doInBackground(Void... params) {
+                                if (ConnectConfig.OFFLINE) {
+                                    player.setHand(PokerPlayer.PokerHand.HIGH_CARDS);
+                                    return true;
+                                } else {
+                                    try {
+                                        String addr = ConnectConfig.getServerAddress(context);
+                                        String key = ConnectConfig.getAccessKey(context);
+                                        int port = ConnectConfig.getServerPort(context);
 
-                                    ManagedChannel channel = ManagedChannelBuilder
-                                            .forAddress(addr, port)
-                                            .usePlaintext(true)
-                                            .build();
-                                    PokerGrpc.PokerBlockingStub stub = PokerGrpc.newBlockingStub(channel);
+                                        ManagedChannel channel = ManagedChannelBuilder
+                                                .forAddress(addr, port)
+                                                .usePlaintext(true)
+                                                .build();
+                                        PokerGrpc.PokerBlockingStub stub = PokerGrpc.newBlockingStub(channel);
 
-                                    PokerOuterClass.SetPlayersCardsRequest.Builder builder = PokerOuterClass.SetPlayersCardsRequest.newBuilder()
-                                            .setAccessToken(key)
-                                            .setUserId(player.getUserId())
-                                            .setGameRoomId(gameRoomId);
+                                        PokerOuterClass.SetPlayersCardsRequest.Builder builder = PokerOuterClass.SetPlayersCardsRequest.newBuilder()
+                                                .setAccessToken(key)
+                                                .setUserId(player.getUserId())
+                                                .setGameRoomId(gameRoomId);
 
-                                    Trump.TrumpCards.Builder cardsBuilder = Trump.TrumpCards.newBuilder();
-                                    for (TrumpCard trumpCard : player.getCards()) {
-                                        cardsBuilder.addCards(trumpCard.getGrpcTrumpCard());
+                                        Trump.TrumpCards.Builder cardsBuilder = Trump.TrumpCards.newBuilder();
+                                        for (TrumpCard trumpCard : player.getCards()) {
+                                            cardsBuilder.addCards(trumpCard.getGrpcTrumpCard());
+                                        }
+                                        builder.setPlayerCards(cardsBuilder.build());
+
+                                        PokerOuterClass.SetPlayersCardsReply reply
+                                                = stub.setPlayersCards(builder.build());
+
+                                        if (!reply.getIsSucceed()) return false;
+
+                                        switch (reply.getHand()) {
+                                            case UNKNOWN:
+                                                break;
+                                            case HIGH_CARDS:
+                                                player.setHand(PokerPlayer.PokerHand.HIGH_CARDS);
+                                                break;
+                                            case ONE_PAIR:
+                                                player.setHand(PokerPlayer.PokerHand.ONE_PAIR);
+                                                break;
+                                            case TWO_PAIRS:
+                                                player.setHand(PokerPlayer.PokerHand.TWO_PAIRS);
+                                                break;
+                                            case THREE_OF_A_KIND:
+                                                player.setHand(PokerPlayer.PokerHand.THREE_OF_A_KIND);
+                                                break;
+                                            case STRAIGHT:
+                                                player.setHand(PokerPlayer.PokerHand.STRAIGHT);
+                                                break;
+                                            case FLUSH:
+                                                player.setHand(PokerPlayer.PokerHand.FLUSH);
+                                                break;
+                                            case FULL_HOUSE:
+                                                player.setHand(PokerPlayer.PokerHand.FULL_HOUSE);
+                                                break;
+                                            case FOUR_OF_A_KIND:
+                                                player.setHand(PokerPlayer.PokerHand.FOUR_OF_A_KIND);
+                                                break;
+                                            case STRAIGHT_FLUSH:
+                                                player.setHand(PokerPlayer.PokerHand.STRAIGHT_FLUSH);
+                                                break;
+                                            case ROYAL_STRAIGHT_FLUSH:
+                                                player.setHand(PokerPlayer.PokerHand.ROYAL_STRAIGHT_FLUSH);
+                                                break;
+                                            case UNRECOGNIZED:
+                                                break;
+                                        }
+
+                                        return false;
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        return false;
                                     }
-                                    builder.setPlayerCards(cardsBuilder.build());
-
-                                    PokerOuterClass.SetPlayersCardsReply reply
-                                            = stub.setPlayersCards(builder.build());
-
-                                    if(!reply.getIsSucceed()) return false;
-
-                                    switch(reply.getHand()){
-                                        case UNKNOWN:
-                                            break;
-                                        case HIGH_CARDS:
-                                            player.setHand(PokerPlayer.PokerHand.HIGH_CARDS);
-                                            break;
-                                        case ONE_PAIR:
-                                            player.setHand(PokerPlayer.PokerHand.ONE_PAIR);
-                                            break;
-                                        case TWO_PAIRS:
-                                            player.setHand(PokerPlayer.PokerHand.TWO_PAIRS);
-                                            break;
-                                        case THREE_OF_A_KIND:
-                                            player.setHand(PokerPlayer.PokerHand.THREE_OF_A_KIND);
-                                            break;
-                                        case STRAIGHT:
-                                            player.setHand(PokerPlayer.PokerHand.STRAIGHT);
-                                            break;
-                                        case FLUSH:
-                                            player.setHand(PokerPlayer.PokerHand.FLUSH);
-                                            break;
-                                        case FULL_HOUSE:
-                                            player.setHand(PokerPlayer.PokerHand.FULL_HOUSE);
-                                            break;
-                                        case FOUR_OF_A_KIND:
-                                            player.setHand(PokerPlayer.PokerHand.FOUR_OF_A_KIND);
-                                            break;
-                                        case STRAIGHT_FLUSH:
-                                            player.setHand(PokerPlayer.PokerHand.STRAIGHT_FLUSH);
-                                            break;
-                                        case ROYAL_STRAIGHT_FLUSH:
-                                            player.setHand(PokerPlayer.PokerHand.ROYAL_STRAIGHT_FLUSH);
-                                            break;
-                                        case UNRECOGNIZED:
-                                            break;
-                                    }
-
-                                    return false;
-                                }catch (Exception e){
-                                    e.printStackTrace();
-                                    return false;
                                 }
                             }
-                        }
 
-                        @Override
-                        protected void onPostExecute(Boolean result) {
-                            dialog.dismiss();
-                            if(result) {
-                            }else{
-                                new AlertDialog.Builder(context)
-                                        .setTitle("通信に失敗しました")
-                                        .setMessage("管理者に問い合わせてください")
-                                        .setPositiveButton("OK", null)
-                                        .show();
+                            @Override
+                            protected void onPostExecute(Boolean result) {
+                                dialog.dismiss();
+                                player.setCommunicating(false);
+                                if (result) {
+                                } else {
+                                    new AlertDialog.Builder(context)
+                                            .setTitle("通信に失敗しました")
+                                            .setMessage("管理者に問い合わせてください")
+                                            .setPositiveButton("OK", null)
+                                            .show();
+                                }
+                                notifyDataSetChanged();
                             }
-                            notifyDataSetChanged();
-                        }
 
-                    }.execute();
+                        }.execute();
+                    }
                 }
 
                 switch (player.getHand()){
